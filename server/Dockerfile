@@ -17,4 +17,5 @@ ENV PROJECTZ0_HOST=0.0.0.0
 EXPOSE 23899
 EXPOSE 8080
 
+
 ENTRYPOINT [ "python3", "/app/app.py" ]
