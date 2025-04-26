@@ -1,0 +1,261 @@
+
+from dataclasses import dataclass, fields, is_dataclass
+import json
+from typing import Any, Dict, Type, TypeVar, Union
+
+from database.models.Position import Position
+
+
+# Define a type variable for Dataclasses, bounded to the base class.
+_T = TypeVar('_T', bound=dataclass)
+
+class JSONExportable:
+    """
+    A mixin class that adds JSON export functionality to dataclasses.
+
+    When used as a base class for a dataclass, it provides a `to_json()` method
+    that converts the dataclass instance into a JSON string.  It handles nested
+    dataclasses, lists, and dictionaries.  It also provides a `from_json()`
+    method to reconstruct a dataclass instance from a JSON string.
+
+    Example Usage:
+
+    @dataclasses.dataclass
+    class Point(JSONExportable):
+        x: int
+        y: int
+
+    @dataclasses.dataclass
+    class MyData(JSONExportable):
+        name: str
+        count: int
+        points: List[Point]
+        mapping: Dict[str, Point]
+        value: Union[int, float, None]
+
+    data = MyData(
+        name="Example",
+        count=10,
+        points=[Point(x=1, y=2), Point(x=3, y=4)],
+        mapping={"a": Point(x=5, y=6), "b": Point(x=7, y=8)},
+        value=3.14
+    )
+
+    json_string = data.to_json()
+    print(json_string)
+
+    loaded_data = MyData.from_json(json_string)
+    print(loaded_data)
+    """
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass instance to a dictionary, handling nested dataclasses,
+        lists, and dictionaries.
+
+        Returns:
+            dict: A dictionary representation of the dataclass.
+        """
+        def _convert_value(value: Any) -> Any:
+            if is_dataclass(value):
+                return value.to_dict()
+            elif isinstance(value, list):
+                return [_convert_value(item) for item in value]
+            elif isinstance(value, dict):
+                return {k: _convert_value(v) for k, v in value.items()}
+            else:
+                return value
+
+        return {field.name: _convert_value(getattr(self, field.name))
+                for field in fields(self)}
+
+    def to_json(self, indent: int = 2) -> str:
+        """
+        Converts the dataclass instance to a JSON string.
+
+        Args:
+            indent (int, optional): The indentation level for the JSON output. Defaults to 2.
+
+        Returns:
+            str: A JSON string representation of the dataclass.
+        """
+        return json.dumps(self.to_dict(), indent=indent)
+
+    @classmethod
+    def from_dict(cls: Type[_T], data: Dict[str, Any]) -> _T:
+        """
+        Reconstructs a dataclass instance from a dictionary.  Handles nested
+        dataclasses, lists, and dictionaries.  This is a class method.
+
+        Args:
+            data (dict): A dictionary representation of the dataclass.
+
+        Returns:
+            _T: An instance of the dataclass.
+        """
+        if not is_dataclass(cls):
+            raise TypeError(f"from_dict can only be called on dataclass types, not {cls}")
+
+        def _convert_value(field_type: Type, value: Any) -> Any:
+            if is_dataclass(field_type):
+                #  Check for None
+                if value is None:
+                    return None
+                return field_type.from_dict(value)
+            elif hasattr(field_type, '__origin__') and field_type.__origin__ is list:
+                if value is None:
+                  return []
+                (inner_type,) = field_type.__args__
+                return [_convert_value(inner_type, item) for item in value]
+            elif hasattr(field_type, '__origin__') and field_type.__origin__ is dict:
+                if value is None:
+                    return {}
+                key_type, value_type = field_type.__args__
+                return {k: _convert_value(value_type, v) for k, v in value.items()}
+            elif hasattr(field_type, '__origin__') and field_type.__origin__ is Union:
+                # Handle Optional[Dataclass]
+                if value is None:
+                    return None
+                # Iterate through the types in the Union
+                for arg in field_type.__args__:
+                    if is_dataclass(arg):
+                         return arg.from_dict(value)
+                    elif arg is type(None) and value is None:
+                         return None
+                return value
+            else:
+                return value
+
+        field_types = {field.name: field.type for field in fields(cls)}
+        # Handle the case where a field is missing in the JSON data.
+        kwargs = {
+            name: _convert_value(field_types[name], data.get(name))
+            for name in field_types
+        }
+        return cls(**kwargs)
+
+    @classmethod
+    def from_json(cls: Type[_T], json_str: str) -> _T:
+        """
+        Reconstructs a dataclass instance from a JSON string. This is a class method.
+
+        Args:
+            json_str (str): A JSON string representation of the dataclass.
+
+        Returns:
+            _T: An instance of the dataclass.
+        """
+        data = json.loads(json_str)
+        return cls.from_dict(data)
+
+
+class JSONAdapter:
+    """
+    Base class for custom JSON adapters.  Adapters should inherit from this
+    class and provide `from_json` and `to_json` methods.
+    """
+    @staticmethod
+    def from_json(data: Union[dict, list, str]) -> Any:
+        """
+        Converts JSON data to an instance of the adapted class.  This method
+        must be implemented by subclasses.
+
+        Args:
+            data (Union[dict, list, str]): The JSON data to convert.
+
+        Returns:
+            Any: An instance of the adapted class.
+        """
+        raise NotImplementedError(
+            "Subclasses must implement the from_json method")
+
+    @staticmethod
+    def to_json(obj: Any) -> Union[dict, list, str]:
+        """
+        Converts an instance of the adapted class to JSON data.  This method
+        must be implemented by subclasses.
+
+        Args:
+            obj (Any): An instance of the adapted class.
+
+        Returns:
+            Union[dict, list, str]: The JSON representation of the object.
+        """
+        raise NotImplementedError("Subclasses must implement the to_json method")
+
+
+class PositionAdapter(JSONAdapter):
+    """
+    A custom JSON adapter for the Position class.
+    """
+    @staticmethod
+    def from_json(json_data: Union[dict, list, str]) -> Position:
+        """
+        Parses JSON data and returns a Position object.  Handles both array
+        and object formats.
+
+        Args:
+            json_data (Union[str, dict, list]): The JSON data to parse.
+                Can be a string, a dictionary, or a list.
+
+        Returns:
+            Position: A Position object.
+
+        Raises:
+            TypeError: If the input data is not a dict, list, or string.
+            ValueError: If the input data is in an invalid format.
+        """
+        if isinstance(json_data, str):
+            try:
+                json_data = json.loads(json_data)
+            except json.JSONDecodeError:
+                raise ValueError("Invalid JSON string")
+        if isinstance(json_data, list):
+            if len(json_data) < 2 or len(json_data) > 3:
+                raise ValueError(
+                    "Position array must have 2 or 3 elements (x, y, z)")
+            x, y = float(json_data[0]), float(json_data[1])
+            z = float(json_data[2]) if len(json_data) == 3 else 0.0
+            return Position(x, y, z)
+        elif isinstance(json_data, dict):
+            if 'x' in json_data:
+                x = float(json_data['x'])
+            elif 'X' in json_data:
+                x = float(json_data['X'])
+            elif '_x' in json_data:
+                x = float(json_data['_x'])
+            else:
+                raise ValueError(
+                    "Missing 'x', 'X', or '_x' field in Position object")
+
+            if 'y' in json_data:
+                y = float(json_data['y'])
+            elif 'Y' in json_data:
+                y = float(json_data['Y'])
+            elif '_y' in json_data:
+                y = float(json_data['_y'])
+            else:
+                raise ValueError(
+                    "Missing 'y', 'Y', or '_y' field in Position object")
+            z = float(json_data.get('z', 0.0))  # handles missing z
+            return Position(x, y, z)
+        else:
+            raise TypeError(
+                "Invalid input type.  Expected dict, list, or string.")
+
+    @staticmethod
+    def to_json(position: Position) -> Union[dict, list, str]:
+        """
+        Converts a Position object to JSON data.  Outputs a JSON array [x, y, z].
+
+        Args:
+            position (Position): The Position object to convert.
+
+        Returns:
+            Union[dict, list, str]: The JSON representation of the Position.
+        """
+        if not isinstance(position, Position):
+            raise TypeError("Input must be a Position object.")
+        return [position.x, position.y, position.z]
+
+

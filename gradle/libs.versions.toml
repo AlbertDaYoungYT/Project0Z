@@ -1,0 +1,70 @@
+[versions]
+agp = "8.9.2"
+kotlin = "2.0.0"
+coreKtx = "1.10.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+lifecycleRuntimeKtx = "2.6.1"
+activityCompose = "1.8.0"
+composeBom = "2024.04.01"
+animationAndroid = "1.7.2"
+foundationAndroid = "1.7.2"
+navigationAnimation = "2.8.9"
+reflectasm = "1.11.9"
+reflections = "0.10.2"
+rtreeMulti = "0.1"
+benchmarkCommon = "1.3.4"
+navigationSafeArgsGenerator = "2.8.9"
+ui = "1.8.0"
+logbackClassic = "1.4.7"
+navigationCompose = "2.8.9"
+bcprovJdk15on = "1.70"
+gson = "2.11.0"
+material = "1.12.0"
+datastorePreferences = "1.1.5"
+navigationFragment = "2.8.9"
+navigationUi = "2.8.9"
+navigationDynamicFeaturesFragment = "2.8.9"
+kotlinxSerializationJson = "1.7.3"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-animation = { module = "androidx.navigation:navigation-animation", version.ref = "navigationAnimation" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-animation-android = { group = "androidx.compose.animation", name = "animation-android", version.ref = "animationAndroid" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
+reflectasm = { module = "com.esotericsoftware:reflectasm", version.ref = "reflectasm" }
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+rtree-multi = { module = "com.github.davidmoten:rtree-multi", version.ref = "rtreeMulti" }
+androidx-benchmark-common = { group = "androidx.benchmark", name = "benchmark-common", version.ref = "benchmarkCommon" }
+androidx-navigation-safe-args-generator = { group = "androidx.navigation", name = "navigation-safe-args-generator", version.ref = "navigationSafeArgsGenerator" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logbackClassic" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+bcprov-jdk15on = { group = "org.bouncycastle", name = "bcprov-jdk15on", version.ref = "bcprovJdk15on" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+androidx-navigation-dynamic-features-fragment = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "navigationDynamicFeaturesFragment" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
