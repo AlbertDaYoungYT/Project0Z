@@ -36,7 +36,7 @@ async def status_handler(request: web.Request, services: AppServices):
     res = {
         "release_candidate": services.game_constants.VERSION, #TODO: Create a release candidate system
         "server": {
-            "version": services.game_constants.SHORT_VERSION,
+            "version": services.game_constants.VERSION,
             "region": region["SHORT"],
             "uptime": time.strftime("%-Hh %-Mm %-Ss", time.gmtime(time.time()-services.uptime)),
             "timestamp": time.time()
