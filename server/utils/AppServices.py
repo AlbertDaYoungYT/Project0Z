@@ -5,6 +5,9 @@ from GameConstants import GameConstants
 from config.ConfigContainer import ConfigContainer
 from database.repositories.AccountRepository import AccountRepository
 from database.repositories.PlayerRepository import PlayerRepository
+from database.repositories.CrashReportRepository import CrashReportRepository
+from server.AsyncGameServer import AsyncGameServer
+from server.http.HttpServer import HttpServer
 
 
 class AppServices:
@@ -12,7 +15,8 @@ class AppServices:
         self.console_args = sys.argv[1:]
         self.uptime = time.time()
 
-
+        self.game_server: AsyncGameServer
+        self.http_server: HttpServer
         self.game_constants = GameConstants
 
         self.config = ConfigContainer()

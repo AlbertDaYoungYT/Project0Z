@@ -15,7 +15,7 @@ class GameConstants(object):
 
     MAX_PLAYERS: int = 100
 
-    # Features enabled by the server #TODO: Add some more features
+    # Features enabled by the server #TODO: Add some more features (or implement them as they are only placeholders)
     SERVER_FEATURES_COMBAT: bool = True
     SERVER_FEATURES_TRADING: bool = True
     SERVER_FEATURES_SECTORS: bool = True
