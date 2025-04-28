@@ -22,3 +22,4 @@ class AppServices:
         self.config = ConfigContainer()
         self.account_repository = AccountRepository(self.config.connectionUri, self.config)
         self.player_repository = PlayerRepository(self.config.connectionUri, self.config)
+        self.crash_report_repository = CrashReportRepository(self.config.connectionUri, self.config)

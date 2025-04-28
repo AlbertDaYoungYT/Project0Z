@@ -16,7 +16,7 @@ async def login_handler(request: web.Request, services: AppServices):
     email    = _json.get("email")
     pwd_hash = _json.get("pwd_hash")
 
-    loguru.logger.info(f"Login Request for {request.remote}@{username}")
+    loguru.logger.debug(f"Login Request for {username}@{request.remote}")
 
     account: Account = await services.account_repository.get_account_by_email(email)
     if account == None: return web.json_response(Codes.INTERNAL_SERVER_ERROR.value.to_dict())
