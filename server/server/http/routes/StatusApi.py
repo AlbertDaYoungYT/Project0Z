@@ -8,24 +8,15 @@ from utils.Errors import Codes  # Import the Router instance (see step 3)
 from dataclasses import fields
 import requests
 
-def get_server_region():
-    try:
-        response = requests.get("https://ipinfo.io/json")
-        data = response.json()
-        res = {
-            "SHORT": f"{data.get('timezone').split('/')[0].capitalize()}-{data.get('country')}",
-            "COUNTRY": f"{data.get('country')}-{data.get('region').lowercase().replace(' ', '_')}"
-        }
-        return res
-    except Exception as e:
-        print(f"Error getting region: {e}")
-        return None
 
 
 async def status_handler(request: web.Request, services: AppServices):
-    _json: dict = json.loads(request.content.read_nowait())
-
-    region = get_server_region()
+    response = requests.get("https://ipinfo.io/json")
+    data = response.json()
+    region = {
+        "SHORT": f"{data.get('timezone').split('/')[0].capitalize()}-{data.get('country')}",
+        "COUNTRY": f"{data.get('country')}-{data.get('region').lower().replace(' ', '_')}"
+    }
     
     prefix = "SERVER_FEATURES_"
     server_features = {
