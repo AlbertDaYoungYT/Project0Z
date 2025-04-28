@@ -1,6 +1,7 @@
 import inspect
 import json
 import time
+import loguru
 from aiohttp import web
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
@@ -43,7 +44,7 @@ async def status_handler(request: web.Request, services: AppServices):
         },
         "game": {
             "max_players": services.game_constants.MAX_PLAYERS,
-            "online_players": None, #TODO: Make the server track the amount of online players
+            "online_players": "", #TODO: Make the server track the amount of online players
             "min_client_version": services.game_constants.MIN_CLIENT_VERSION,
             "maintenance_mode": False,
             "features": server_features
