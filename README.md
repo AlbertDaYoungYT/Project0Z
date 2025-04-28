@@ -4,7 +4,7 @@
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 
 <picture>
-    <img src="assets/images/banner.png">
+    <img src="/assets/images/banner.png">
 </picture>
 
 
