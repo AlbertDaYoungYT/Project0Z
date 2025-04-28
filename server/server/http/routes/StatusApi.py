@@ -65,6 +65,7 @@ async def status_handler(request: web.Request, services: AppServices):
             "verified": True
         }
     }
+    loguru.logger.debug(res)
 
     return web.json_response(res)
 
