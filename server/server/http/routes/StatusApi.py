@@ -23,8 +23,6 @@ def get_server_region():
 
 
 async def status_handler(request: web.Request, services: AppServices):
-    _json: dict = json.loads(request.content.read_nowait())
-
     region = get_server_region()
     
     prefix = "SERVER_FEATURES_"
@@ -65,7 +63,6 @@ async def status_handler(request: web.Request, services: AppServices):
             "verified": True
         }
     }
-    loguru.logger.debug(res)
 
     return web.json_response(res)
 
