@@ -82,4 +82,5 @@ class Codes(Enum):
     DEPENDENCY_FAILURE = ErrorDetails(code=904, name="DEPENDENCY_FAILURE", message="A required external service failed to respond.")
     MEMORY_OVERLOAD = ErrorDetails(code=905, name="MEMORY_OVERLOAD", message="The server ran out of memory processing the request.")
     RATE_LIMIT_EXCEEDED = ErrorDetails(code=906, name="RATE_LIMIT_EXCEEDED", message="Rate limit exceeded. Slow down your requests.")
+    FATAL_SERVER_ERROR = ErrorDetails(code=907, name="FATAL_SERVER_ERROR", message="The server encountered a fatal error.")
 

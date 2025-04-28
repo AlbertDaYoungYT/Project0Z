@@ -27,11 +27,11 @@ async def status_handler(request: web.Request, services: AppServices):
 
     res = {
         "release_candidate": services.game_constants.VERSION, #TODO: Create a release candidate system
+        "timestamp": time.time(),
         "server": {
             "version": services.game_constants.VERSION,
             "region": region["SHORT"],
-            "uptime": time.strftime("%-Hh %-Mm %-Ss", time.gmtime(time.time()-services.uptime)),
-            "timestamp": time.time()
+            "uptime": time.strftime("%-Hh %-Mm %-Ss", time.gmtime(time.time()-services.uptime))
         },
         "game": {
             "max_players": services.game_constants.MAX_PLAYERS,
@@ -58,7 +58,3 @@ async def status_handler(request: web.Request, services: AppServices):
     }
 
     return web.json_response(res)
-
-
-if __name__ == "__main__":
-    print(get_server_region())
