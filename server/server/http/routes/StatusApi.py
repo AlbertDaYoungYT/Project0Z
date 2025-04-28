@@ -45,7 +45,7 @@ async def status_handler(request: web.Request, services: AppServices):
         "game": {
             "max_players": services.game_constants.MAX_PLAYERS,
             "online_players": "", #TODO: Make the server track the amount of online players
-            "min_client_version": services.game_constants.MIN_CLIENT_VERSION,
+            "min_client_version": list(services.game_constants.MIN_CLIENT_VERSION),
             "maintenance_mode": False,
             "features": server_features
         },

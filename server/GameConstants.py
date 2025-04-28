@@ -6,9 +6,9 @@ from utils.Vectors import Vector2d
 
 @dataclass
 class GameConstants(object):
-    GIT_COMMITHASH: str = os.getenv("GIT_COMMITHASH")
+    GIT_COMMITHASH: str = os.getenv("GIT_COMMITHASH", "")
     
-    VERSION: str = os.getenv("VERSION")
+    VERSION: str = os.getenv("VERSION", "")
     MIN_CLIENT_VERSION: tuple[int] = (0, 0, 1)
     VERSION_PARTS: tuple[int] = (0, 0, 1)
 
