@@ -74,18 +74,14 @@ class ProjectZ0:
 
         if self.services.game_constants.GIT_BRANCH == "main":
             loguru.logger.info(f"Server Starting in production mode...")
-            game_port = 23899
-            http_port = 8080
         if self.services.game_constants.GIT_BRANCH == "dev":
             loguru.logger.info(f"Server Starting in development mode...")
-            game_port = 23898
-            http_port = 8081
 
         # Start the server in the background
-        game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST"), game_port, self.services)
+        game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST"), os.getenv("GAME_PORT", 23899), self.services)
         await game_server.start()
         
-        http_server = HttpServer(os.getenv("PROJECTZ0_HOST"), http_port, self.services)
+        http_server = HttpServer(os.getenv("PROJECTZ0_HOST"), os.getenv("HTTP_PORT", 24899), self.services)
         web_runner = await http_server.start()
         
 
