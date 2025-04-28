@@ -25,37 +25,8 @@ from server.http.HttpServer import HttpServer
 from server.player.Account import Account
 
 
-class ClientProtocol(asyncio.DatagramProtocol):
-    def connection_made(self, transport):
-        self.transport = transport
-        loguru.logger.info('Client socket created')
-    def datagram_received(self, data, addr):
-        loguru.logger.info(f'Received {data!r} from {addr}')
-    def error_received(self, exc):
-        loguru.logger.error(f'Error received: {exc}')
-    def connection_lost(self, exc):
-        loguru.logger.info('Client socket closed')
-
-async def udp_client(host, port, message: bytes):
-    transport = None
-    try:
-        loop = asyncio.get_running_loop()
-        transport, protocol = await loop.create_datagram_endpoint(
-            lambda: ClientProtocol(),
-            remote_addr=(host, port)
-        )
-        loguru.logger.info(f'Sending {message!r} to {host}:{port}')
-        transport.sendto(message)
-        await asyncio.sleep(5)  # Allow time for response
-    finally:
-        if transport:
-            transport.close()
-
-
-
 #TODO: Create a log transport system to sync logcat errors to the server (Maybe via http)
 #TODO: Create an admin dashboard for managing game mechanics etc.
-#TODO: Make a serialization system between client and server.
 
 
 
@@ -78,18 +49,18 @@ class ProjectZ0:
             loguru.logger.info(f"Server Starting in development mode...")
 
         # Start the server in the background
-        game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST"), os.getenv("GAME_PORT", 23899), self.services)
-        await game_server.start()
+        self.services.game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST"), os.getenv("GAME_PORT", 23899), self.services)
+        await self.services.game_server.start()
         
-        http_server = HttpServer(os.getenv("PROJECTZ0_HOST"), os.getenv("HTTP_PORT", 24899), self.services)
-        web_runner = await http_server.start()
+        self.services.http_server = HttpServer(os.getenv("PROJECTZ0_HOST"), os.getenv("HTTP_PORT", 24899), self.services)
+        web_runner = await self.services.http_server.start()
         
 
         try:
             await asyncio.Future()  # Keep both servers running
         finally:
             await web_runner.cleanup()
-            await game_server.stop() 
+            await self.services.game_server.stop() 
 
 
     async def _test_database(self):
