@@ -15,7 +15,7 @@ async def status_handler(request: web.Request, services: AppServices):
     data = response.json()
     region = {
         "SHORT": f"{data.get('timezone').split('/')[0].capitalize()}-{data.get('country')}",
-        "COUNTRY": f"{data.get('country')}-{data.get('region').lowercase().replace(' ', '_')}"
+        "COUNTRY": f"{data.get('country')}-{data.get('region').lower().replace(' ', '_')}"
     }
     
     prefix = "SERVER_FEATURES_"
