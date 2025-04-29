@@ -43,9 +43,9 @@ class ProjectZ0:
     async def start(self):
         loguru.logger.info(f"ProjectZ0 Version: {self.services.game_constants.VERSION}")
 
-        if self.services.game_constants.GIT_BRANCH == "main":
+        if os.getenv("GIT_BRANCH", "main") == "main":
             loguru.logger.info(f"Server Starting in production mode...")
-        if self.services.game_constants.GIT_BRANCH == "dev":
+        if os.getenv("GIT_BRANCH", "main") == "dev":
             loguru.logger.info(f"Server Starting in development mode...")
 
         # Start the server in the background
