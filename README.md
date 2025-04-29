@@ -3,7 +3,8 @@
 ![Platform](https://img.shields.io/badge/platform-mobile-blue)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 
-![Banner](.github/banner.png)
+<img src="assets/banner.svg"/>
+
 
 > 🌌 **Procedural Worlds** | 🔥 **Dynamic Events** | ⚔️ **Faction Warfare** | 📈 **Live Economy** | 📚 **Deep Lore**
 
@@ -33,7 +34,7 @@
 | Technology    | Purpose                                      |
 | ------------- | -------------------------------------------- |
 | **Python**    | Backend server                               |
-| **CouchDB**   | Accounts, items, sectors, shops, loadouts, lore, events |
+| **CouchDB**   | Accounts, items, sectors, shops, loadout, lore, events |
 | **KCP/UDP**   | Real-time gameplay networking protocol       |
 | **HTTP (basic)** | Login, registration, and session validation |
 
@@ -72,7 +73,7 @@
     │
     └── CouchDB
           ├─ Persistent Player Data
-          ├─ Items, Loadouts, Shops
+          ├─ Items, Loadout, Shops
           ├─ World and Sector States
           ├─ Event History
           └─ Lore Database
@@ -84,13 +85,13 @@
 
 ### Clone and Build
 ```bash
-git clone https://github.com/your-username/project-z0.git
-cd project-z0
+git clone https://github.com/AlbertDaYoungYT/Project0Z.git project-z0/
+cd project-z0/server
 docker build -t project-z0-server .
 docker run -d --name project-z0 -p 23899:23899 24899:24899 project-z0-server
 ```
 
-The server auto-generates a `.env` file and keeps itself updated via Git hooks.
+The development servers automatic pull system auto-generates a `.env` file and keeps itself updated via Git hooks, this means you wont be able to use the environment variables it generates. But it has fallbacks in place to prevent any catastrophic events.
 
 ---
 
@@ -100,7 +101,7 @@ The server auto-generates a `.env` file and keeps itself updated via Git hooks.
 - [x] KCP Real-Time Protocol Setup
 - [x] CouchDB Integration
 - [ ] Player Movement and Sector Interaction
-- [ ] Loadouts, Abilities, and Item System
+- [ ] Loadout, Abilities, and Item System
 - [ ] Real-Time Event Generation
 - [ ] Dynamic Economy Implementation
 - [ ] Procedural Sector Generation
@@ -115,13 +116,13 @@ The server auto-generates a `.env` file and keeps itself updated via Git hooks.
 Currently not accepting external contributions.  
 If you have suggestions, ideas, or bug reports, feel free to open an issue or discussion!
 
-> Future plans include opening up contributions once core systems are stable.
+> Future plans include opening up contributions once core systems are stable and public testing servers are in place.
 
 ---
 
 ## 📃 License
 
-Project Z0 is **proprietary** during its development phase.  
+Project Z0 is **PROPRIETARY** during its development phase.  
 Potential future licensing will be evaluated once a playable alpha is released.
 
 ---
