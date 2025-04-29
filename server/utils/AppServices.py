@@ -15,8 +15,8 @@ class AppServices:
         self.console_args = sys.argv[1:]
         self.uptime = time.time()
 
-        self.game_server: AsyncGameServer
-        self.http_server: HttpServer
+        self.game_server = None
+        self.http_server = None
         self.game_constants = GameConstants
 
         self.config = ConfigContainer()
