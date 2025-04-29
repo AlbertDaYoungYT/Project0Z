@@ -3,7 +3,7 @@
 ![Platform](https://img.shields.io/badge/platform-mobile-blue)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 
-<img src="assets/images/banner.svg"/>
+<img src="assets/banner.svg"/>
 
 
 > 🌌 **Procedural Worlds** | 🔥 **Dynamic Events** | ⚔️ **Faction Warfare** | 📈 **Live Economy** | 📚 **Deep Lore**
