@@ -6,8 +6,6 @@ from config.ConfigContainer import ConfigContainer
 from database.repositories.AccountRepository import AccountRepository
 from database.repositories.PlayerRepository import PlayerRepository
 from database.repositories.CrashReportRepository import CrashReportRepository
-from server.AsyncGameServer import AsyncGameServer
-from server.http.HttpServer import HttpServer
 
 
 class AppServices:
