@@ -29,8 +29,8 @@ from utils.Errors import Codes
 
 class CertificateAuthority:
     def __init__(self, 
-                 root_key_path="./certificates/trusted/official_key.pem", 
-                 root_cert_path="./certificates/trusted/official_cert.pem"):
+                 root_key_path="certificates/trusted/official_key.pem", 
+                 root_cert_path="certificates/trusted/official_cert.pem"):
         self.root_key_path = root_key_path
         self.root_cert_path = root_cert_path
         self.root_private_key = None
