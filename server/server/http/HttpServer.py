@@ -15,6 +15,7 @@ async def logging_middleware(request: web.Request, handler: Callable[[web.Reques
     Middleware to log incoming requests and their processing time.
     """
     start_time = asyncio.get_event_loop().time()
+    loguru.logger.debug(type(request))
     loguru.logger.info(f"Incoming request: {request.method} {request.path}")
     try:
         response = await handler(request)
