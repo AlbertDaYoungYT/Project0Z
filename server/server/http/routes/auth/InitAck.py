@@ -9,7 +9,8 @@ async def initial_ack_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())
 
     loguru.logger.debug(f"Initial ACK Request from {request.remote}")
-    id = _json.get("id", UUID(secrets.token_bytes(16)))
+    id = _json.get("id", None)
+    if id == None: return web.json_response(Codes.ITEM_NOT_FOUND.value.to_dict())
     
     res = {
         "id": id,

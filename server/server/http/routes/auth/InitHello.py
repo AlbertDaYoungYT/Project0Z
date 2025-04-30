@@ -1,4 +1,6 @@
 import json, loguru
+from uuid import UUID
+import secrets
 import time
 from aiohttp import web
 import requests
@@ -22,6 +24,7 @@ async def initial_greeting_handler(request: web.Request, services: AppServices):
         return web.json_response(Codes.CLIENT_VERSION_TOO_LOW.value.to_dict())
     
     res = {
+        "id": UUID(secrets.token_bytes(16)).hex,
         "version": services.game_constants.VERSION,
         "min_client_version": services.game_constants.MIN_CLIENT_VERSION,
         "region": region["SHORT"],
