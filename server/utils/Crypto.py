@@ -118,8 +118,7 @@ class CertificateAuthority:
 class SessionKeyManager:
     def __init__(self, ca: CertificateAuthority):
         self.ca = ca
-
-        self.signed_certs: dict[UUID, list[rsa.RSAPrivateKey, Certificate]]
+        self.signed_certs: dict[UUID, list[rsa.RSAPrivateKey, Certificate]] = {}
 
     def generate_session_cert(self, id: UUID):
         private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
