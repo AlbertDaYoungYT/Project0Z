@@ -14,7 +14,7 @@ async def initial_ack_handler(request: web.Request, services: AppServices):
     
     res = {
         "id": id,
-        "public_key": base64.urlsafe_b64encode(services.ca_authority.root_private_key.private_bytes_raw()).decode()
+        "public_key": base64.urlsafe_b64encode(services.ca_authority.root_private_key.public_key().public_bytes_raw()).decode()
     }
 
     return web.json_response(res)
