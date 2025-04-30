@@ -18,7 +18,7 @@ async def initial_greeting_handler(request: web.Request, services: AppServices):
     loguru.logger.debug(f"Greeting Request from {request.remote}")
 
     # Check if Client version is supported by server
-    if not sum(services.game_constants.MIN_CLIENT_VERSION) > sum(_json["client_version"]):
+    if sum(services.game_constants.MIN_CLIENT_VERSION) > sum(_json["client_version"]):
         return web.json_response(Codes.CLIENT_VERSION_TOO_LOW.value.to_dict())
     
     res = {
