@@ -13,6 +13,11 @@ class ConfigContainer:
     couchdb_user: str = "projectz0"
     couchdb_pass: str = "1Cr3x8X5TKIPTdrp7xZd"
 
+    redis_host: str = "192.168.1.2"
+    redis_port: int = 30059
+    redis_user: str = "root"
+    redis_pass: str = "1Cr3x8X5TKIPTdrp7xZd"
+
     dispatchKey: str = ""
 
 

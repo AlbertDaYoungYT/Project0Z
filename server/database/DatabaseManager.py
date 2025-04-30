@@ -1,4 +1,5 @@
 
+import redis
 import loguru
 import asyncio
 import couchdb
@@ -105,3 +106,29 @@ class CouchDBManager:
         return []
     
     # Add more generic database interaction methods as needed (e.g., list all docs, etc.)
+
+
+
+class RedisDBManager:
+
+    def __init__(self, config: ConfigContainer):
+        self.config = config
+        self.server = None
+        self._connect()
+
+    def _connect(self):
+        """Connect to the RedisDB server."""
+        try:
+            self.server = redis.Redis(
+                host=self.config.redis_host,
+                port=self.config.redis_port,
+                password=self.config.redis_pass,
+                db=1
+            )
+            loguru.logger.info(f"Connected to Redis server at {self.config.redis_host}:{self.config.redis_port}")
+        except Exception as e:
+            loguru.logger.error(f"Failed to connect to Redis server: {e}")
+            self.server = None
+        
+    def get_redis(self):
+        return self.server

@@ -1,5 +1,8 @@
 
-class SessionState:
+from enum import Enum
+
+
+class SessionState(Enum):
     INACTIVE = "INACTIVE"
     WAITING_FOR_TOKEN = "WAITING_FOR_TOKEN"
     WAITING_FOR_LOGIN = "WAITING_FOR_LOGIN"

@@ -97,15 +97,17 @@ The development servers automatic pull system auto-generates a `.env` file and k
 
 ## 🔄 Roadmap
 
-- [x] Core Authentication and Session Framework
 - [x] KCP Real-Time Protocol Setup
 - [x] CouchDB Integration
+- [ ] Core Frameworks for testing and development
+- [ ] Core Authentication and Session Framework
+- [ ] Redis Integration
 - [ ] Player Movement and Sector Interaction
 - [ ] Loadout, Abilities, and Item System
+- [ ] Lore and game story
 - [ ] Real-Time Event Generation
 - [ ] Dynamic Economy Implementation
 - [ ] Procedural Sector Generation
-- [ ] Lore System Deployment
 - [ ] Achievements and Progression
 - [ ] Mobile Client Early Alpha
 
@@ -129,7 +131,7 @@ Potential future licensing will be evaluated once a playable alpha is released.
 
 ## 👥 Authors
 
-- **Lead Developer:** @AlbertDaYoungYT
+- **Lead Developer:** ![@AlbertDaYoungYT](https://github.com/AlbertDaYoungYT)
 - **Design Inspiration:** Helldivers II, Pokémon GO, Material 3 UX philosophy
 
 ---

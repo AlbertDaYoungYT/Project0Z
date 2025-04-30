@@ -32,6 +32,10 @@ class Codes(Enum):
     MFA_REQUIRED = ErrorDetails(code=108, name="MFA_REQUIRED", message="Multi-factor authentication is required.")
     MFA_FAILED = ErrorDetails(code=109, name="MFA_FAILED", message="Multi-factor authentication failed.")
 
+    CLIENT_VERSION_TOO_LOW = ErrorDetails(code=110, name="CLIENT_VERSION_TOO_LOW", message="The client version does not meet the servers Minimum Requirements.")
+    FAILED_LOADING_OFFICIAL_CERTIFICATES = ErrorDetails(code=111, name="FAILED_LOADING_OFFICIAL_CERTIFICATES", message="Failed loading official certificates")
+    CLIENT_CHALLENGE_VERIFICATION_FAILED = ErrorDetails(code=112, name="CLIENT_CHALLENGE_VERIFICATION_FAILED", message="Failed to verify Client provided Challenge.")
+
     # User/Account Related Errors (2xx)
     USER_NOT_FOUND = ErrorDetails(code=200, name="USER_NOT_FOUND", message="User with the given identifier not found.")
     USERNAME_TAKEN = ErrorDetails(code=201, name="USERNAME_TAKEN", message="The specified username is already in use.")

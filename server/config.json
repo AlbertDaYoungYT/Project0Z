@@ -1,0 +1,1 @@
+{"collection": "projectz0", "connectionUri": "http://192.168.1.2:15984/", "couchdb_user": "projectz0", "couchdb_pass": "1Cr3x8X5TKIPTdrp7xZd", "redis_host": "192.168.1.2", "redis_port": 30059, "redis_user": "root", "redis_pass": "1Cr3x8X5TKIPTdrp7xZd", "dispatchKey": ""}

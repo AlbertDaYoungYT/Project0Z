@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from .SectorBiome import SectorBiome
+from server.sector.resources import *
+from server.sector.structures.Defenses import Defenses
+from server.sector.structures.Infrastructure import Infrastructure
 from utils.Vectors import Vector2dPolygon
 
 
@@ -17,9 +20,13 @@ class Sector:
     health: float
     regeneration_amount: float
 
-    foes_level: int
+    enemy_invasion_level: int
     missions_liberated: int
     missions_lost: int
     soldiers_fallen: int
-    foes_eradicated: int
+    enemies_eradicated: int
     accidentals: int
+
+    resources: List[Dict[Resource, int]]
+    infrastructure: List[Infrastructure]
+    defenses: List[Dict[Defenses, int]]

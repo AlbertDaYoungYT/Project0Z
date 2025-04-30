@@ -99,7 +99,6 @@ public class BasePacket {
         try {
             baos.write(bytes)
         } catch (e: IOException) {
-            // TODO Auto-generated catch block
             e.printStackTrace()
         }
     }
