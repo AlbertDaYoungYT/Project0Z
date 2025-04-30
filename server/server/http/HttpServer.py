@@ -9,13 +9,12 @@ from utils.AppServices import AppServices
 from .Router import router  # Import Router class and instance
 import server.http.routes
 
-
+@web.middleware
 async def logging_middleware(request: web.Request, handler: Callable[[web.Request], Awaitable[web.Response]]) -> web.Response:
     """
     Middleware to log incoming requests and their processing time.
     """
     start_time = asyncio.get_event_loop().time()
-    loguru.logger.debug(type(request))
     loguru.logger.info(f"Incoming request: {request.method} {request.path}")
     try:
         response = await handler(request)
@@ -29,6 +28,7 @@ async def logging_middleware(request: web.Request, handler: Callable[[web.Reques
         loguru.logger.info(f"Request handled in {end_time - start_time:.3f} seconds: {request.method} {request.path} -> {response.status}")
     return response
 
+@web.middleware
 async def timestamp_middleware(request: web.Request, handler: Callable[[web.Request], Awaitable[web.Response]]) -> web.Response:
     """
     Middleware to timestamp every response
@@ -43,7 +43,7 @@ class HttpServer:
         self.host = host
         self.port = port
         self.services = services
-        self.app = web.Application(middlewares=[timestamp_middleware, logging_middleware])
+        self.app = web.Application()
         self.router = router  # Use the globally available router instance
         self._setup_routes()
         self.runner = None
