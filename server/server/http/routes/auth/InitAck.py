@@ -8,13 +8,13 @@ from utils.Errors import Codes  # Import the Router instance (see step 3)
 async def initial_ack_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())
 
-    loguru.logger.debug(f"Initial ACK Request from {request.remote}")
+    loguru.logger.debug(f"Initial ACK Response from {request.remote}")
     id = _json.get("id", None)
     if id == None: return web.json_response(Codes.ITEM_NOT_FOUND.value.to_dict())
     
     res = {
         "id": id,
-        "session_key": base64.urlsafe_b64encode(services.session_key_manager.generate_session_cert(id).tbs_certificate_bytes).decode()
+        "public_key": base64.urlsafe_b64encode(services.ca_authority.root_private_key.private_bytes_raw()).decode()
     }
 
     return web.json_response(res)
