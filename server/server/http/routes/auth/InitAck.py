@@ -11,7 +11,7 @@ async def initial_ack_handler(request: web.Request, services: AppServices):
     loguru.logger.debug(f"Initial ACK Response from {request.remote}")
     id = _json.get("id", None)
     if id == None: return web.json_response(Codes.ITEM_NOT_FOUND.value.to_dict())
-    print(services.ca_authority.root_private_key.public_key())
+    loguru.logger.debug(services.ca_authority.root_private_key.public_key())
     res = {
         "id": id,
         "public_key": base64.urlsafe_b64encode(services.ca_authority.root_private_key.public_key()).decode()
