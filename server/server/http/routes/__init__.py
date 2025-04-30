@@ -4,6 +4,9 @@ from server.http.routes.SignupApi import signup_handler
 from server.http.routes.StatusApi import status_handler
 from server.http.routes.log.CrashReporter import crash_report_handler
 from server.http.routes.auth.InitHello import initial_greeting_handler
+from server.http.routes.auth.InitAck import initial_ack_handler
+from server.http.routes.auth.SigningChallengeRequest import signing_challenge_handler
+from server.http.routes.auth.SigningChallengeSubmit import challenge_submission_handler
 from utils.AppServices import AppServices
 
 
@@ -22,5 +25,8 @@ def register_routes(http_router: HttpRouter, services: AppServices):
 
 
     router.post("/auth/hello", lambda request: initial_greeting_handler(request, services))
+    router.post("/auth/ack", lambda request: initial_ack_handler(request, services))
+    router.post("/auth/challenge/req", lambda request: signing_challenge_handler(request, services))
+    router.post("/auth/challenge/res", lambda request: challenge_submission_handler(request, services))
 
 
