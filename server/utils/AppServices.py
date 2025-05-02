@@ -8,6 +8,7 @@ from database.repositories.PlayerRepository import PlayerRepository
 from database.repositories.CrashReportRepository import CrashReportRepository
 from database.repositories.CertificateRepository import CertificateRepository
 from database.DatabaseManager import RedisDBManager
+from security.DDOSProtection import DDOSProtectionSystem
 from utils.Crypto import CertificateAuthority, SessionKeyManager
 
 
@@ -30,6 +31,8 @@ class AppServices:
         self.certificate_repository = CertificateRepository(self.config.connectionUri, self.config)
 
         self.redis_server = RedisDBManager(self.config)
+
+        self.ddos_protection_system = DDOSProtectionSystem(self.config)
 
 
 class VariableTunnel:

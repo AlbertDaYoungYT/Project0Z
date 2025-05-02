@@ -18,9 +18,8 @@ class ConfigContainer:
     redis_user: str = "root"
     redis_pass: str = "1Cr3x8X5TKIPTdrp7xZd"
 
-    dispatchKey: str = ""
-
-
+    max_connections_per_ip_within_time_window: int = 60
+    connection_time_window_seconds: int = 60
 
 
     def __json__(self):

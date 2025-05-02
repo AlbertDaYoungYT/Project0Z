@@ -4,6 +4,7 @@ from typing import Awaitable, Callable
 import loguru
 from aiohttp import web
 
+from utils.Errors import Codes
 from utils.AppServices import AppServices
 from .Router import router  # Import Router class and instance
 import server.http.routes
@@ -14,6 +15,9 @@ def logging_middleware_factory(services: AppServices):
         """
         Middleware to log incoming requests and their processing time.
         """
+        if services.ddos_protection_system.hit_tcp(request):
+            return Codes.RATE_LIMIT_EXCEEDED.to_response()
+        
         start_time = asyncio.get_event_loop().time()
         loguru.logger.info(f"Incoming request: {request.method} {request.path}")
         response = None  # Initialize response
