@@ -20,6 +20,9 @@ class PacketOpcodes:
     PlayerEventNotify = 8
 
     # Authentication
+    ClientXORKeyRequest = 98
+    ClientXORKeySubmission = 99
+    
     PlayerLoginReq = 101
     PlayerLoginRsp = 102
     PlayerLogoutReq = 103

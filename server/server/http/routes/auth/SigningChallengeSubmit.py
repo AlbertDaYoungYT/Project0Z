@@ -1,3 +1,4 @@
+import base64
 import json, loguru, hashlib, secrets
 from uuid import UUID
 import time
@@ -5,34 +6,72 @@ from aiohttp import web
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, load_pem_public_key
+from cryptography.hazmat.backends import default_backend
+
 async def challenge_submission_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.value.to_dict())
-    if _json.get("challenge") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.value.to_dict())
+    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("challenge_submission") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
     id = _json.get("id")
-    signed_challenge = _json.get("challenge")
+    client_submitted_challenge = _json.get("challenge_submission")
 
     loguru.logger.debug(f"Signing Challenge Submission from {request.remote}")
 
-    original_challenge = services.redis_server.get_redis().get(f"CHALLENGE_{id}")["challenge"]
-    signed_original_challenge = services.ca_authority.root_private_key.sign(original_challenge.encode()).decode()
+    # The Client Auth and Key data is fetched from the previous step
+    stored_client_auth = json.loads(services.redis_server.get_redis().get(f"CLIENT::CHALLENGE::{request.remote}::{id}"))
+    if stored_client_auth == None: return web.json_response(Codes.CLIENT_INVALID_ID.to_dict())
 
-    if signed_challenge != signed_original_challenge: return web.json_response(Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.value.to_dict())
+    # Clients signed challenge is decrypted and verify it against the servers
+    loaded_client_public_key = load_pem_public_key(
+        base64.b64decode(stored_client_auth["client_public_key"][len("BASE64::CLIENT_PUBLIC_KEY::"):].encode()),
+        backend=default_backend()
+    )
+    try: 
+        res = loaded_client_public_key.verify(
+            base64.b64decode(client_submitted_challenge[len("BASE64::CHALLENGE::"):].encode()),
+            base64.b64decode(stored_client_auth["original_challenge"][len("SHA256::CHALLENGE::"):].encode()),
+            padding=padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            algorithm=hashes.SHA256()
+        )
+    except Exception as e:
+        loguru.logger.error(Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.to_logger(e))
+        return web.json_response(Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.to_dict())
+    finally:
+        # Delete any left over Redis Entries from the Authentication Process
+        services.redis_server.get_redis().delete(f"CLIENT::CHALLENGE::{request.remote}::{id}")
 
-    auth_token = hashlib.md5(secrets.token_bytes(64)).hexdigest()
-    session_key = services.session_key_manager.generate_session_cert(UUID(id)).public_key().public_bytes_raw()
 
-    services.redis_server.get_redis().set(f"SESSION_KEY_{id}", {
+    # Generate Client Auth ID from Client ID
+    auth_id = hashlib.md5(id.encode()).hexdigest()
+    session_cert = services.session_key_manager.generate_session_cert(UUID(auth_id))
+    session_private_key = services.session_key_manager.get_signed_cert_full(UUID(auth_id))[0]
+    certificate_model = await services.certificate_repository.create_certificate(
+        id=UUID(id),
+        auth_id=auth_id,
+        certificate=session_cert,
+        private_key=session_private_key
+    )
+    if certificate_model == None: return web.json_response(Codes.DATABASE_QUERY_ERROR.to_dict())
+
+    services.redis_server.get_redis().set(f"CLIENT::CERTIFICATE::{request.remote}::{id}", json.dumps({
         "id": id,
-        "auth_token": auth_token,
-        "session_key": session_key.decode(),
+        "auth_id": auth_id,
+        "session_cert_model": certificate_model.to_dict(),
         "_timestamp": time.time()
-    })
+    }))
 
     return web.json_response({
         "id": id,
-        "auth_token": auth_token,
-        "session_key": session_key.decode()
+        "auth_id": auth_id,
+        "session_certificate": "BASE64::CERTIFICATE::"+base64.b64encode(session_cert.public_bytes(
+                                    Encoding.PEM
+                                )).decode()
     })

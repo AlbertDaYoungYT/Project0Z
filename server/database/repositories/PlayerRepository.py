@@ -58,6 +58,6 @@ class PlayerRepository(CouchDBManager):
             return result is not None
         return False
 
-    async def delete_player(self, player_id: str, rev: str):
-        """Delete an player by its ID and revision."""
-        return await self.delete_document(self.DATABASE_NAME, player_id, rev)
+    async def delete_player(self, player_id: str):
+        """Delete an player by its ID."""
+        return await self.delete_document(self.DATABASE_NAME, player_id)

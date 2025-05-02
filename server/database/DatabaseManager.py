@@ -74,12 +74,12 @@ class CouchDBManager:
                 return None
         return None
 
-    async def delete_document(self, db_name: str, doc_id: str, doc_rev: str):
+    async def delete_document(self, db_name: str, doc_id: str):
         """Delete a document from the specified database by its ID and revision."""
         db = self.get_database(db_name)
         if db:
             try:
-                await asyncio.to_thread(db.delete, doc_id, doc_rev)
+                await asyncio.to_thread(db.delete, doc_id)
                 loguru.logger.debug(f"Document '{doc_id}' deleted from '{db_name}'.")
                 return True
             except couchdb.ResourceNotFound:

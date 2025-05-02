@@ -1,7 +1,14 @@
 
 from dataclasses import dataclass, fields, is_dataclass
+from datetime import date, datetime, timedelta
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, PrivateFormat, NoEncryption
+from cryptography.x509 import Certificate, load_pem_x509_certificate
+
 import hashlib
-import json
+import json, base64
 from typing import Any, Dict, Type, TypeVar, Union
 from uuid import UUID
 
@@ -72,6 +79,21 @@ class Serializable:
                 return {k: _convert_value(v) for k, v in value.items()}
             elif isinstance(value, UUID):
                 return value.hex
+            elif isinstance(value, rsa.RSAPrivateKey):
+                return "BASE64::PRIVATE_KEY::"+base64.b64encode(value.private_bytes(
+                    Encoding.PEM,
+                    PrivateFormat.TraditionalOpenSSL,
+                    NoEncryption() # TODO: Please figure something else out than this
+                )).decode()
+            elif isinstance(value, rsa.RSAPublicKey):
+                return "BASE64::PUBLIC_KEY::"+base64.b64encode(value.public_bytes(
+                    Encoding.PEM,
+                    PublicFormat.SubjectPublicKeyInfo
+                )).decode()
+            elif isinstance(value, Certificate):
+                return "BASE64::CERTIFICATE::"+base64.b64encode(value.public_bytes(
+                            Encoding.PEM
+                        )).decode()
             else:
                 return value
 
@@ -132,6 +154,35 @@ class Serializable:
                     elif arg is type(None) and value is None:
                          return None
                 return value
+            elif isinstance(value, str) and value.startswith("BASE64::PRIVATE_KEY::"):
+                private_key_bytes: bytes = base64.b64decode(
+                    value[len("BASE64::PRIVATE_KEY::"):]
+                    .encode()
+                )
+                private_key: rsa.RSAPrivateKey = serialization.load_pem_private_key(
+                    private_key_bytes,
+                    backend=default_backend()
+                )
+                return private_key
+            elif isinstance(value, str) and value.startswith("BASE64::PUBLIC_KEY::"):
+                public_key_bytes: bytes = base64.b64decode(
+                    value[len("BASE64::PUBLIC_KEY::"):]
+                    .encode()
+                )
+                public_key: rsa.RSAPublicKey = serialization.load_pem_public_key(
+                    public_key_bytes,
+                    backend=default_backend()
+                )
+                return public_key
+            elif isinstance(value, str) and value.startswith("BASE64::CERTIFICATE::"):
+                certificate_bytes: bytes = base64.b64decode(
+                    value[len("BASE64::CERTIFICATE::"):]
+                    .encode()
+                )
+                certificate: Certificate = load_pem_x509_certificate(
+                    public_key_bytes
+                )
+                return certificate
             else:
                 return value
 

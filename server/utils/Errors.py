@@ -13,9 +13,8 @@ class ErrorDetails(Serializable):
     name: str
     message: str
 
-    def to_logger(self) -> str:
-        return f"Error (Code {self.code}) {self.name} '{self.message}'"
-
+    def to_logger(self, e: Exception | None = None) -> str:
+        return f"Error (Code {self.code}) {self.name} '{self.message}'" + str(e.args) if e != None else ""
 
 class Codes(Enum):
     SUCCESS = ErrorDetails(code=0, name="SUCCESS", message="Operation successful")
@@ -35,6 +34,9 @@ class Codes(Enum):
     CLIENT_VERSION_TOO_LOW = ErrorDetails(code=110, name="CLIENT_VERSION_TOO_LOW", message="The client version does not meet the servers Minimum Requirements.")
     FAILED_LOADING_OFFICIAL_CERTIFICATES = ErrorDetails(code=111, name="FAILED_LOADING_OFFICIAL_CERTIFICATES", message="Failed loading official certificates")
     CLIENT_CHALLENGE_VERIFICATION_FAILED = ErrorDetails(code=112, name="CLIENT_CHALLENGE_VERIFICATION_FAILED", message="Failed to verify Client provided Challenge.")
+    CLIENT_INVALID_ID = ErrorDetails(code=113, name="CLIENT_INVALID_ID", message="Client provided ID is invalid.")
+    FAILED_GENERATING_AUTH_CHALLENGE = ErrorDetails(code=114, name="FAILED_GENERATING_AUTH_CHALLENGE", message="Server failed to generate or encrypt Authentication Challenge.")
+    CLIENT_AUTHENTICATION_TOKEN_INVALID = ErrorDetails(code=115, name="CLIENT_AUTHENTICATION_TOKEN_INVALID", message="Clients Authentication Token is invalid.")
 
     # User/Account Related Errors (2xx)
     USER_NOT_FOUND = ErrorDetails(code=200, name="USER_NOT_FOUND", message="User with the given identifier not found.")

@@ -10,8 +10,8 @@ class GameConstants(object):
     GIT_BRANCH: str = os.getenv("GIT_BRANCH", "")
     
     VERSION: str = os.getenv("VERSION", "")
-    MIN_CLIENT_VERSION: tuple[int] = (0, 0, 1)
-    VERSION_PARTS: tuple[int] = (0, 0, 1)
+    MIN_CLIENT_VERSION: tuple[int] = (0, 0, 2)
+    VERSION_PARTS: tuple[int] = (0, 0, 2)
 
     MAX_PLAYERS: int = 100
 

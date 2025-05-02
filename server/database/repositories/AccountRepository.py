@@ -62,6 +62,6 @@ class AccountRepository(CouchDBManager):
             return result is not None
         return False
 
-    async def delete_account(self, account_id: str, rev: str):
-        """Delete an account by its ID and revision."""
-        return await self.delete_document(self.DATABASE_NAME, account_id, rev)
+    async def delete_account(self, account_id: str):
+        """Delete an account by its ID."""
+        return await self.delete_document(self.DATABASE_NAME, account_id)

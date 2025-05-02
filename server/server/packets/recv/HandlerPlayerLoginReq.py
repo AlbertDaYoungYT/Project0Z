@@ -21,7 +21,7 @@ class HandlerPlayerLoginReq(PacketHandler):
         # Parse request
         req = PlayerLoginReq.parse_from(payload)
         if req is None:
-            loguru.logger.debug(Codes.ACCOUNT_CHECK_FAILED.value.to_logger())
+            loguru.logger.debug(Codes.ACCOUNT_CHECK_FAILED.to_logger())
             await session.close()
             return
         
@@ -32,14 +32,14 @@ class HandlerPlayerLoginReq(PacketHandler):
                 account = await session.services.account_repository.get_account_by_token(req.token)
                 session.set_account(account)
             except Exception as e:
-                loguru.logger.debug(Codes.ACCOUNT_CHECK_FAILED.value.to_logger())
+                loguru.logger.debug(Codes.ACCOUNT_CHECK_FAILED.to_logger())
                 await session.close()
                 return 
 
 
         # Authenticate session
         if session.get_account().token != req.token: # Assuming Account object has a 'token' attribute
-            loguru.logger.debug(Codes.ACCOUNT_NOT_VERIFIED.value.to_logger())
+            loguru.logger.debug(Codes.ACCOUNT_NOT_VERIFIED.to_logger())
             await session.close()
             return
 

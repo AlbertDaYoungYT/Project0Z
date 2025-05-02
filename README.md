@@ -99,9 +99,10 @@ The development servers automatic pull system auto-generates a `.env` file and k
 
 - [x] KCP Real-Time Protocol Setup
 - [x] CouchDB Integration
+- [ ] Redis Integration
+- [ ] Implementing Easy Testing for each file
 - [ ] Core Frameworks for testing and development
 - [ ] Core Authentication and Session Framework
-- [ ] Redis Integration
 - [ ] Player Movement and Sector Interaction
 - [ ] Loadout, Abilities, and Item System
 - [ ] Lore and game story

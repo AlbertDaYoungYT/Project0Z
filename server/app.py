@@ -49,10 +49,10 @@ class ProjectZ0:
             loguru.logger.info(f"Server Starting in development mode...")
 
         # Start the server in the background
-        self.services.game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST"), os.getenv("GAME_PORT", 23899), self.services)
+        self.services.game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST", "127.0.0.1"), os.getenv("GAME_PORT", 23899), self.services)
         await self.services.game_server.start()
         
-        self.services.http_server = HttpServer(os.getenv("PROJECTZ0_HOST"), os.getenv("HTTP_PORT", 24899), self.services)
+        self.services.http_server = HttpServer(os.getenv("PROJECTZ0_HOST", "127.0.0.1"), os.getenv("HTTP_PORT", 24899), self.services)
         web_runner = await self.services.http_server.start()
         
 

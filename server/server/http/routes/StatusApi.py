@@ -31,7 +31,7 @@ async def status_handler(request: web.Request, services: AppServices):
         "server": {
             "version": services.game_constants.VERSION,
             "region": region["SHORT"],
-            "uptime": time.strftime("%-Hh %-Mm %-Ss", time.gmtime(time.time()-services.uptime))
+            "uptime": time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - services.uptime))
         },
         "game": {
             "max_players": services.game_constants.MAX_PLAYERS,

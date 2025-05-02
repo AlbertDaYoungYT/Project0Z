@@ -6,6 +6,7 @@ from config.ConfigContainer import ConfigContainer
 from database.repositories.AccountRepository import AccountRepository
 from database.repositories.PlayerRepository import PlayerRepository
 from database.repositories.CrashReportRepository import CrashReportRepository
+from database.repositories.CertificateRepository import CertificateRepository
 from database.DatabaseManager import RedisDBManager
 from utils.Crypto import CertificateAuthority, SessionKeyManager
 
@@ -26,6 +27,7 @@ class AppServices:
         self.account_repository = AccountRepository(self.config.connectionUri, self.config)
         self.player_repository = PlayerRepository(self.config.connectionUri, self.config)
         self.crash_report_repository = CrashReportRepository(self.config.connectionUri, self.config)
+        self.certificate_repository = CertificateRepository(self.config.connectionUri, self.config)
 
         self.redis_server = RedisDBManager(self.config)
 

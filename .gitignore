@@ -15,6 +15,9 @@
 local.properties
 
 __pycache__/
+*.cpython-310.pyc
+*.cpython-312.pyc
+*.cpython-313.pyc
 
 official_cert.pem
 official_key.pem

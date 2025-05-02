@@ -106,13 +106,13 @@ class CertificateAuthority:
 #                    password=os.getenv("CERTIFICATE_PASSWORD", None)
 #                )
 #        else:
-#            loguru.logger.error(Codes.FAILED_LOADING_OFFICIAL_CERTIFICATES.value.to_logger())
+#            loguru.logger.error(Codes.FAILED_LOADING_OFFICIAL_CERTIFICATES.to_logger())
 #
 #        if os.path.exists(self.root_cert_path):
 #            with open(self.root_cert_path, "rb") as cert_file:
 #                self.root_certificate = x509.load_pem_x509_certificate(cert_file.read())
 #        else:
-#            loguru.logger.error(Codes.FAILED_LOADING_OFFICIAL_CERTIFICATES.value.to_logger())
+#            loguru.logger.error(Codes.FAILED_LOADING_OFFICIAL_CERTIFICATES.to_logger())
 
 
 class SessionKeyManager:
@@ -126,3 +126,56 @@ class SessionKeyManager:
 
         self.signed_certs[id] = [private_key, cert]
         return cert
+    
+    def get_signed_cert_full(self, id: UUID) -> list[rsa.RSAPrivateKey, Certificate]:
+        return self.signed_certs[id]
+    
+    def get_signed_cert_only(self, id: UUID) -> Certificate:
+        return self.signed_certs[id][2]
+
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import secrets
+
+class DiffieHellman:
+    def __init__(self):
+        self.diffieHellman = ec.generate_private_key(ec.SECP384R1(), default_backend())
+        self.public_key = self.diffieHellman.public_key()
+        self.IV = secrets.token_bytes(16)
+
+    def encrypt(self, public_key, secret):
+        shared_key = self.diffieHellman.exchange(ec.ECDH(), public_key)
+        derived_key = HKDF(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=None,
+            info=None,
+            backend=default_backend()
+        ).derive(shared_key)
+
+        aes = Cipher(algorithms.AES(derived_key), modes.CBC(self.IV), backend=default_backend())
+        encryptor = aes.encryptor()
+
+        padder = padding.PKCS7(128).padder()
+        padded_data = padder.update(secret.encode()) + padder.finalize()
+        return encryptor.update(padded_data) + encryptor.finalize()
+
+    def decrypt(self, public_key, secret, iv):
+        shared_key = self.diffieHellman.exchange(ec.ECDH(), public_key)
+        derived_key = HKDF(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=None,
+            info=None,
+            backend=default_backend()
+        ).derive(shared_key)
+
+        aes = Cipher(algorithms.AES(derived_key), modes.CBC(iv), backend=default_backend())
+        decryptor = aes.decryptor()
+        decrypted_data = decryptor.update(secret) + decryptor.finalize()
+
+        unpadder = padding.PKCS7(128).unpadder()
+        return unpadder.update(decrypted_data) + unpadder.finalize()
