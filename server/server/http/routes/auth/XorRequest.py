@@ -9,7 +9,7 @@ async def xor_key_create_request_handler(request: web.Request, services: AppServ
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("id") == None: return Codes.INVALID_FIELD_VALUE.to_response()
     id = _json.get("id")
 
     loguru.logger.debug(f"XOR Key Creation Request from {request.remote}")
@@ -30,7 +30,7 @@ async def xor_key_get_request_handler(request: web.Request, services: AppService
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("id") == None: return Codes.INVALID_FIELD_VALUE.to_response()
     id = _json.get("id")
 
     loguru.logger.debug(f"XOR Key Fetch Request from {request.remote}")

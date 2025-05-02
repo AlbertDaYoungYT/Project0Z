@@ -8,9 +8,9 @@ async def login_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("username") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
-    if _json.get("email")    == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
-    if _json.get("pwd_hash") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("username") == None: return Codes.INVALID_FIELD_VALUE.to_response()
+    if _json.get("email")    == None: return Codes.INVALID_FIELD_VALUE.to_response()
+    if _json.get("pwd_hash") == None: return Codes.INVALID_FIELD_VALUE.to_response()
 
     username = _json.get("username")
     email    = _json.get("email")
@@ -19,9 +19,9 @@ async def login_handler(request: web.Request, services: AppServices):
     loguru.logger.debug(f"Login Request for {username}@{request.remote}")
 
     account: Account = await services.account_repository.get_account_by_email(email)
-    if account == None: return web.json_response(Codes.INTERNAL_SERVER_ERROR.to_dict())
+    if account == None: return Codes.INTERNAL_SERVER_ERROR.to_response()
 
-    if account.is_banned: return web.json_response(Codes.ACCOUNT_BANNED.to_dict())
+    if account.is_banned: return Codes.ACCOUNT_BANNED.to_response()
 
     res = {"status": "success"}
     res.update(account.to_client())

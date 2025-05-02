@@ -26,7 +26,7 @@ async def initial_greeting_handler(request: web.Request, services: AppServices):
 
     # Check if Client version is supported by server
     if sum(services.game_constants.MIN_CLIENT_VERSION) > sum(_json["client_version"]):
-        return web.json_response(Codes.CLIENT_VERSION_TOO_LOW.to_dict())
+        return Codes.CLIENT_VERSION_TOO_LOW.to_response()
     
     res = {
         "id": UUID(secrets.token_hex(16)).hex,
@@ -60,9 +60,9 @@ async def returning_greeting_handler(request: web.Request, services: AppServices
         client_cert_model = await services.certificate_repository.get_certificate_by_auth_token(
             auth_token=auth_token
         )
-        if client_cert_model == None: return web.json_response(Codes.DATABASE_RECORD_NOT_FOUND.to_dict())
+        if client_cert_model == None: return Codes.DATABASE_RECORD_NOT_FOUND.to_response()
     
-    if client_auth_params["auth_id"] != auth_token: return web.json_response(Codes.CLIENT_AUTHENTICATION_TOKEN_INVALID.to_dict())
+    if client_auth_params["auth_id"] != auth_token: return Codes.CLIENT_AUTHENTICATION_TOKEN_INVALID.to_response()
 
     # Generate new Authentication Token and ID
     new_id = UUID(secrets.token_hex(16))
@@ -80,7 +80,7 @@ async def returning_greeting_handler(request: web.Request, services: AppServices
         private_key=client_cert_model.private_key,
         public_key=client_cert_model.public_key
     )
-    if database_response == None: return web.json_response(Codes.DATABASE_QUERY_ERROR.to_dict())
+    if database_response == None: return Codes.DATABASE_QUERY_ERROR.to_response()
 
     services.redis_server.get_redis().set(f"CLIENT::CERTIFICATE::{request.remote}::{new_id}", {
         "id": new_id,

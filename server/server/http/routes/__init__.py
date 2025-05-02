@@ -16,17 +16,17 @@ def register_routes(http_router: HttpRouter, services: AppServices):
     However, you can keep it for potential modularity or if you prefer
     explicit registration within the module.
     """
-    router.get("/", lambda request: status_handler(request, services))
+    router.get("/", status_handler)
 
-    router.post("/login", lambda request: login_handler(request, services))
-    router.post("/signup", lambda request: signup_handler(request, services))
+    router.post("/login", login_handler)
+    router.post("/signup", signup_handler)
 
-    router.post("/log/crash_report", lambda request: crash_report_handler(request, services))
+    router.post("/log/crash_report", crash_report_handler)
 
 
-    router.post("/auth/hello", lambda request: initial_greeting_handler(request, services))
-    router.post("/auth/ack", lambda request: initial_ack_handler(request, services))
-    router.post("/auth/challenge/req", lambda request: signing_challenge_handler(request, services))
-    router.post("/auth/challenge/res", lambda request: challenge_submission_handler(request, services))
+    router.post("/auth/hello", initial_greeting_handler)
+    router.post("/auth/ack", initial_ack_handler)
+    router.post("/auth/challenge/req", signing_challenge_handler)
+    router.post("/auth/challenge/res", challenge_submission_handler)
 
 

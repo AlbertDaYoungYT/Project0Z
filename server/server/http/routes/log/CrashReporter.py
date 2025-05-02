@@ -20,13 +20,13 @@ async def crash_report_handler(request: web.Request, services: AppServices):
         if account == None:
             loguru.logger.error(f"Oh uh... Server Failed to handle Client Error:")
             loguru.logger.error(f"CLIENT-{request.remote}: Email={email} Token={token} REQ={_json}")
-            return web.json_response(Codes.FATAL_SERVER_ERROR.to_dict())
+            return Codes.FATAL_SERVER_ERROR.to_response()
 
 
-    if account.is_banned: return web.json_response(Codes.ACCOUNT_BANNED.to_dict())
+    if account.is_banned: return Codes.ACCOUNT_BANNED.to_response()
 
     crash_report: CrashReportModel = await services.crash_report_repository.create_crash_report(account, crash, logcat)
-    if crash_report == None: return web.json_response(Codes.INTERNAL_SERVER_ERROR.to_dict())
+    if crash_report == None: return Codes.INTERNAL_SERVER_ERROR.to_response()
 
     loguru.logger.debug(f"CLIENT-{request.remote}: Crash report saved with id = {crash_report.report_id}")
     res = {"status": "success"}

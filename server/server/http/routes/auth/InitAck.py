@@ -12,8 +12,8 @@ async def initial_ack_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
-    if _json.get("client_public_key") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("id") == None: return Codes.INVALID_FIELD_VALUE.to_response()
+    if _json.get("client_public_key") == None: return Codes.INVALID_FIELD_VALUE.to_response()
     id = _json.get("id")
     client_public_key = _json.get("client_public_key")
 

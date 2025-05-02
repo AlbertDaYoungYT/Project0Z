@@ -14,14 +14,14 @@ async def signing_challenge_handler(request: web.Request, services: AppServices)
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("id") == None: return Codes.INVALID_FIELD_VALUE.to_response()
     id = _json.get("id")
 
     loguru.logger.debug(f"Signing Challenge Request from {request.remote}")
 
     # Get Clients Public Key from Redis
     client_public_key = json.loads(services.redis_server.get_redis().get(f"BASE64::CLIENT_PUBLIC_KEY::{id}"))
-    if client_public_key == None: return web.json_response(Codes.CLIENT_INVALID_ID.to_dict())
+    if client_public_key == None: return Codes.CLIENT_INVALID_ID.to_response()
     client_public_key = client_public_key["client_public_key"]
 
     loaded_client_public_key = load_pem_public_key(
@@ -43,7 +43,7 @@ async def signing_challenge_handler(request: web.Request, services: AppServices)
         challenge = base64.b64encode(challenge).decode()
     except Exception as e:
         loguru.logger.error(Codes.FAILED_GENERATING_AUTH_CHALLENGE.to_logger(e))
-        return web.json_response(Codes.FAILED_GENERATING_AUTH_CHALLENGE.to_dict())
+        return Codes.FAILED_GENERATING_AUTH_CHALLENGE.to_response()
 
     # Generate new UUID for client
     new_id = UUID(secrets.token_hex(16)).hex
@@ -64,6 +64,6 @@ async def signing_challenge_handler(request: web.Request, services: AppServices)
         }))
     except Exception as e:
         loguru.logger.error(Codes.DATABASE_QUERY_ERROR.to_logger(e))
-        return web.json_response(Codes.DATABASE_QUERY_ERROR.to_dict())
+        return Codes.DATABASE_QUERY_ERROR.to_response()
 
     return web.json_response(res)

@@ -15,8 +15,8 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
     _json: dict = json.loads(request.content.read_nowait())
 
     # Check if JSON is valid
-    if _json.get("id") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
-    if _json.get("challenge_submission") == None: return web.json_response(Codes.INVALID_FIELD_VALUE.to_dict())
+    if _json.get("id") == None: return Codes.INVALID_FIELD_VALUE.to_response()
+    if _json.get("challenge_submission") == None: return Codes.INVALID_FIELD_VALUE.to_response()
     id = _json.get("id")
     client_submitted_challenge = _json.get("challenge_submission")
 
@@ -24,7 +24,7 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
 
     # The Client Auth and Key data is fetched from the previous step
     stored_client_auth = json.loads(services.redis_server.get_redis().get(f"CLIENT::CHALLENGE::{request.remote}::{id}"))
-    if stored_client_auth == None: return web.json_response(Codes.CLIENT_INVALID_ID.to_dict())
+    if stored_client_auth == None: return Codes.CLIENT_INVALID_ID.to_response()
 
     # Clients signed challenge is decrypted and verify it against the servers
     loaded_client_public_key = load_pem_public_key(
@@ -43,7 +43,7 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
         )
     except Exception as e:
         loguru.logger.error(Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.to_logger(e))
-        return web.json_response(Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.to_dict())
+        return Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.to_response()
     finally:
         # Delete any left over Redis Entries from the Authentication Process
         services.redis_server.get_redis().delete(f"CLIENT::CHALLENGE::{request.remote}::{id}")
@@ -59,7 +59,7 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
         certificate=session_cert,
         private_key=session_private_key
     )
-    if certificate_model == None: return web.json_response(Codes.DATABASE_QUERY_ERROR.to_dict())
+    if certificate_model == None: return Codes.DATABASE_QUERY_ERROR.to_response()
 
     services.redis_server.get_redis().set(f"CLIENT::CERTIFICATE::{request.remote}::{id}", json.dumps({
         "id": id,
