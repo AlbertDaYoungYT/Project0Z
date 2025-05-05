@@ -3,6 +3,7 @@ import json, loguru, hashlib, secrets
 from uuid import UUID
 import time
 from aiohttp import web
+from database.models.CertificateModel import CertificateModel
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 
@@ -20,12 +21,11 @@ async def signing_challenge_handler(request: web.Request, services: AppServices)
     loguru.logger.debug(f"Signing Challenge Request from {request.remote}")
 
     # Get Clients Public Key from Redis
-    client_public_key = json.loads(services.redis_server.get_redis().get(f"BASE64::CLIENT_PUBLIC_KEY::{id}"))
+    client_public_key: CertificateModel | None = await services.redisdb.get(f"BASE64::CLIENT_PUBLIC_KEY::{id}", CertificateModel)
     if client_public_key == None: return Codes.CLIENT_INVALID_ID.to_response()
-    client_public_key = client_public_key["client_public_key"]
 
     loaded_client_public_key = load_pem_public_key(
-        base64.b64decode(client_public_key[len("BASE64::CLIENT_PUBLIC_KEY::"):].encode())
+        base64.b64decode(client_public_key.public_key[len("BASE64::CLIENT_PUBLIC_KEY::"):].encode())
     )
 
     # Challenge is generated, encrypted and signed
@@ -47,7 +47,7 @@ async def signing_challenge_handler(request: web.Request, services: AppServices)
 
     # Generate new UUID for client
     new_id = UUID(secrets.token_hex(16)).hex
-    services.redis_server.get_redis().delete(f"BASE64::CLIENT_PUBLIC_KEY::{id}")
+    await services.redisdb.delete(f"BASE64::CLIENT_PUBLIC_KEY::{id}")
 
     res = {
         "id": new_id,
@@ -55,12 +55,11 @@ async def signing_challenge_handler(request: web.Request, services: AppServices)
     }
     
     try:
-        services.redis_server.get_redis().set(f"CLIENT::CHALLENGE::{request.remote}::{new_id}", json.dumps({
+        await services.redisdb.add(f"CLIENT::CHALLENGE::{request.remote}::{new_id}", CertificateModel.from_dict({
             "id": new_id,
-            "client_public_key": client_public_key,
+            "public_key": client_public_key.public_key,
             "original_challenge": f"SHA256::CHALLENGE::{original_challenge}",
-            "encrypted_challenge": f"BASE64::CHALLENGE::{challenge}",
-            "_timestamp": time.time()
+            "encrypted_challenge": f"BASE64::CHALLENGE::{challenge}"
         }))
     except Exception as e:
         loguru.logger.error(Codes.DATABASE_QUERY_ERROR.to_logger(e))

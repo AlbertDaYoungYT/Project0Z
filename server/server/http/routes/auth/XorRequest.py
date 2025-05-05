@@ -1,6 +1,7 @@
 import json, loguru, hashlib, secrets
 import time
 from aiohttp import web
+from database.models.CertificateModel import CertificateModel
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 
@@ -15,11 +16,10 @@ async def xor_key_create_request_handler(request: web.Request, services: AppServ
     loguru.logger.debug(f"XOR Key Creation Request from {request.remote}")
 
     xor_key = hashlib.md5(secrets.token_bytes(32)).hexdigest()
-    services.redis_server.get_redis().set(f"CLIENT::XOR::{request.remote}::{id}", {
+    await services.redisdb.add(f"CLIENT::XOR::{request.remote}::{id}", CertificateModel.from_dict({
         "id": id,
-        "xor_key": xor_key,
-        "_timestamp": time.time()
-    })
+        "xor_key": xor_key
+    }))
 
     return web.json_response({
         "id": id,
@@ -35,4 +35,4 @@ async def xor_key_get_request_handler(request: web.Request, services: AppService
 
     loguru.logger.debug(f"XOR Key Fetch Request from {request.remote}")
     
-    return web.json_response(services.redis_server.get_redis().get(f"CLIENT::XOR::{request.remote}::{id}"))
+    return web.json_response((await services.redisdb.get(f"CLIENT::XOR::{request.remote}::{id}")).to_json())

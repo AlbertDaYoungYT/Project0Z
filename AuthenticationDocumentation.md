@@ -6,7 +6,7 @@ The system is based on a combination of **public key cryptography**, **certifica
 
 Project Z0's security architecture is designed for reliable communication where official and unofficial servers must be distinguishable by clients, must be sent over the HTTP/HTTPS protocol using the Authentication System. Any publicly hosted server found to be breaching Project Z0 TOS will be investigated for misuse and could potentially be permanently banned from client discovery.
 
-## Server Authentication Flow
+## HTTP/HTTPS Authentication Flow
 1. **Server Boot**:
     - If no server root key exists, it generates a new ed25519 keypair.
     - The Root Key is a default key used to issue new certificates, and is stored in the <ins>**server/certificates/trusted/**</ins> directory.
@@ -57,6 +57,19 @@ Project Z0's security architecture is designed for reliable communication where 
     - Clients can Request or Provide a new XOR Key using UDP Packet Opcode (98 or 99)
         - 98 = XOR Request.
         - 99 = XOR Submit.
+
+## UDP Authentication Flow
+When the client has finished HTTP/HTTPS authentication it can proceed to authenticate over UDP. The UDP authentication process uses the negotiated RSA Key from the HTTP/HTTPS authentication process.
+
+Every datagram packet has a header containing identifying information and metadata related to the user/client.
+These client information are hashed with SHA3-128 as to be unique without breaching security, its then packaged with the Client ID, timestamp and packet number to complete the packet header.
+The Server does roughly the same when forming a packet header, but instead sends server metadata and the timestamp.
+Server metadata consists of Player count, Region, Version, Uptime and who's hosting the Server.
+
+1. **Client Greeting**
+    - The UDP Client greeting is very similar to the HTTP/HTTPS greeting, the data just have to be formatted a little differently.
+    - 
+
 
 ## Tests
 
@@ -120,6 +133,6 @@ Project Z0's Authentication System effectively counters the following threat mod
 - [ ]: Add timestamps to every HTTP or UDP packet/message sent over the network.
 - [x]: Create new client IDs for every step in Authentication Process.
 - [ ]: Implement UDP Authentication System.
-- [ ]: Rewrite the ServerSigning.md Documentation and remake the UML Diagram.
+- [ ]: Rewrite the AuthenticationDocumentation.md Documentation and remake the UML Diagram.
 - [ ]: Rewrite the auth_test.py file to be easier to read.
 - [ ]: Implement flexibility in terms of Key Hashes or Padding types.

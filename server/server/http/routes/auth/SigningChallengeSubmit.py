@@ -3,6 +3,7 @@ import json, loguru, hashlib, secrets
 from uuid import UUID
 import time
 from aiohttp import web
+from database.models.CertificateModel import CertificateModel
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 
@@ -23,18 +24,18 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
     loguru.logger.debug(f"Signing Challenge Submission from {request.remote}")
 
     # The Client Auth and Key data is fetched from the previous step
-    stored_client_auth = json.loads(services.redis_server.get_redis().get(f"CLIENT::CHALLENGE::{request.remote}::{id}"))
+    stored_client_auth: CertificateModel | None = await services.redisdb.get(f"CLIENT::CHALLENGE::{request.remote}::{id}", CertificateModel)
     if stored_client_auth == None: return Codes.CLIENT_INVALID_ID.to_response()
 
     # Clients signed challenge is decrypted and verify it against the servers
     loaded_client_public_key = load_pem_public_key(
-        base64.b64decode(stored_client_auth["client_public_key"][len("BASE64::CLIENT_PUBLIC_KEY::"):].encode()),
+        base64.b64decode(stored_client_auth.public_key[len("BASE64::CLIENT_PUBLIC_KEY::"):].encode()),
         backend=default_backend()
     )
-    try: 
+    try:
         res = loaded_client_public_key.verify(
             base64.b64decode(client_submitted_challenge[len("BASE64::CHALLENGE::"):].encode()),
-            base64.b64decode(stored_client_auth["original_challenge"][len("SHA256::CHALLENGE::"):].encode()),
+            base64.b64decode(stored_client_auth.original_challenge[len("SHA256::CHALLENGE::"):].encode()),
             padding=padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()),
                 salt_length=padding.PSS.MAX_LENGTH
@@ -46,7 +47,7 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
         return Codes.CLIENT_CHALLENGE_VERIFICATION_FAILED.to_response()
     finally:
         # Delete any left over Redis Entries from the Authentication Process
-        services.redis_server.get_redis().delete(f"CLIENT::CHALLENGE::{request.remote}::{id}")
+        await services.redisdb.delete(f"CLIENT::CHALLENGE::{request.remote}::{id}")
 
 
     # Generate Client Auth ID from Client ID
@@ -61,11 +62,10 @@ async def challenge_submission_handler(request: web.Request, services: AppServic
     )
     if certificate_model == None: return Codes.DATABASE_QUERY_ERROR.to_response()
 
-    services.redis_server.get_redis().set(f"CLIENT::CERTIFICATE::{request.remote}::{id}", json.dumps({
+    await services.redisdb.add(f"CLIENT::CERTIFICATE::{request.remote}::{id}", CertificateModel.from_dict({
         "id": id,
         "auth_id": auth_id,
-        "session_cert_model": certificate_model.to_dict(),
-        "_timestamp": time.time()
+        "certificate": certificate_model.certificate
     }))
 
     return web.json_response({

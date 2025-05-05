@@ -7,8 +7,8 @@ from utils.File import File
 @dataclass
 class ConfigContainer:
 
-    collection: str = "projectz0"
-    connectionUri: str = "http://192.168.1.2:15984/"
+    couchdb_collection: str = "projectz0"
+    couchdb_connection_uri: str = "http://192.168.1.2:15984/"
 
     couchdb_user: str = "projectz0"
     couchdb_pass: str = "1Cr3x8X5TKIPTdrp7xZd"
@@ -18,7 +18,9 @@ class ConfigContainer:
     redis_user: str = "root"
     redis_pass: str = "1Cr3x8X5TKIPTdrp7xZd"
 
-    max_connections_per_ip_within_time_window: int = 60
+    cache_expire_time_seconds: int = 3600
+
+    max_connections_per_ip_within_time_window: int = 240
     connection_time_window_seconds: int = 60
 
 
@@ -32,10 +34,10 @@ class ConfigContainer:
         return dct
     
     def __load__(self, file: File):
-        self = json.loads(file.read(), object_hook=self.__decode__)
+        return json.loads(file.read(), object_hook=self.__decode__)
     
     def __save__(self, file: File):
-        return file.write(json.dumps(self, default=lambda o: o.__json__() if hasattr(o, '__json__') else None))
+        file.write(json.dumps(self, default=lambda o: o.__json__() if hasattr(o, '__json__') else None))
 
     
 

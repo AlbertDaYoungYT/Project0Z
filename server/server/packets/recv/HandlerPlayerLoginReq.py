@@ -13,7 +13,7 @@ from server.player.Player import Player
 from utils.Errors import Codes
 
 
-@opcodes(value=PacketOpcodes.PlayerLoginReq)
+@opcodes(value=PacketOpcodes.PLAYER_LOGIN_REQUEST)
 class HandlerPlayerLoginReq(PacketHandler):
     async def handle(self, session: GameSession, header: bytes, payload: bytes):
         loguru.logger.info(f"Received PlayerLoginReq payload: {payload} header: {header}")

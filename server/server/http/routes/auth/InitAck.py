@@ -3,6 +3,7 @@ import time
 import secrets, base64
 from uuid import UUID
 from aiohttp import web
+from database.models.CertificateModel import CertificateModel
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 
@@ -33,10 +34,9 @@ async def initial_ack_handler(request: web.Request, services: AppServices):
         "server_public_key": server_public_key
     }
     
-    services.redis_server.get_redis().set(f"BASE64::CLIENT_PUBLIC_KEY::{id}", json.dumps({
+    await services.redisdb.add(f"BASE64::CLIENT_PUBLIC_KEY::{id}", CertificateModel.from_dict({
         "id": id,
-        "client_public_key": client_public_key,
-        "_timestamp": time.time()
+        "public_key": client_public_key
     }))
 
     return web.json_response(res)

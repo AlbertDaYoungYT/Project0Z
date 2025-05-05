@@ -18,7 +18,7 @@ class BasePacket(metaclass=OpcodeMeta):
         self.data: bytes = b''
         self.use_dispatch_key: bool = False
 
-    
+
     def get_opcode(self): return self.opcode
     def set_opcode(self, opcode: int): self.opcode = opcode
 

@@ -7,7 +7,7 @@ import loguru
 
 import loguru
 from server.packets.BasePacket import BasePacket
-from server.connectors import PlayerAccountConnector
+from connectors import PlayerAccountConnector
 from server.states.SessionState import SessionState
 from utils import Crypto
 from utils.DatabaseAdapter import Serializable

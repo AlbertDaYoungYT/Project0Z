@@ -1,103 +1,97 @@
-
-
 from dataclasses import dataclass
 
 import loguru
 
 
 class PacketOpcodes:
-    # Empty
     NONE: int = 0
 
     # Heartbeat & Ping
-    PingReq = 1
-    PingRsp = 2
-
-    # Others
-    QueryPathReq = 3
-    QueryPathRsp = 4
-    PlayerTimeNotify = 7
-    PlayerEventNotify = 8
+    PING_REQUEST: int = 1
+    PING_RESPONSE: int = 2
 
     # Authentication
-    ClientXORKeyRequest = 98
-    ClientXORKeySubmission = 99
-    
-    PlayerLoginReq = 101
-    PlayerLoginRsp = 102
-    PlayerLogoutReq = 103
-    PlayerLogoutRsp = 104
+    CLIENT_XOR_KEY_REQUEST: int = 98
+    CLIENT_XOR_KEY_SUBMISSION: int = 99
 
-    # World / Movement (continued)
-    PlayerPositionNotify = 200
-    WorldObjectSpawnNotify = 201
-    WorldObjectDespawnNotify = 202
-    WorldObjectStateUpdateNotify = 203
-    WorldTimeUpdateNotify = 204
-    WorldWeatherChangeNotify = 205
-    WorldEnvironmentSyncReq = 206
-    WorldEnvironmentSyncRsp = 207
-    WorldSectorTransferReq = 208
-    WorldSectorTransferRsp = 209
+    # Player Management
+    PLAYER_LOGIN_REQUEST: int = 101
+    PLAYER_LOGIN_RESPONSE: int = 102
+    PLAYER_LOGOUT_REQUEST: int = 103
+    PLAYER_LOGOUT_RESPONSE: int = 104
 
-    WorldEventTriggerNotify = 210
-    WorldEventResultNotify = 211
+    PLAYER_TIME_NOTIFY: int = 105
+    PLAYER_EVENT_NOTIFY: int = 106
 
-    WorldInteractObjectReq = 212
-    WorldInteractObjectRsp = 213
+    # World / Movement Management
+    PLAYER_POSITION_UPDATE_NOTIFY: int = 200
+    WORLD_OBJECT_SPAWN_NOTIFY: int = 201
+    WORLD_OBJECT_DESPAWN_NOTIFY: int = 202
+    WORLD_OBJECT_STATE_UPDATE_NOTIFY: int = 203
+    WORLD_TIME_UPDATE_NOTIFY: int = 204
+    WORLD_WEATHER_CHANGE_NOTIFY: int = 205
+    WORLD_ENVIRONMENT_SYNC_REQUEST: int = 206
+    WORLD_ENVIRONMENT_SYNC_RESPONSE: int = 207
+    WORLD_SECTOR_TRANSFER_REQUEST: int = 208
+    WORLD_SECTOR_TRANSFER_RESPONSE: int = 209
 
-    WorldNPCSpawnNotify = 220
-    WorldNPCDespawnNotify = 221
-    WorldNPCDialogueStartReq = 222
-    WorldNPCDialogueStartRsp = 223
-    WorldNPCDialogueOptionReq = 224
-    WorldNPCDialogueOptionRsp = 225
-    WorldNPCMoveNotify = 226
+    WORLD_EVENT_TRIGGER_NOTIFY: int = 210
+    WORLD_EVENT_RESULT_NOTIFY: int = 211
 
-    WorldItemDropNotify = 230
-    WorldItemPickupReq = 231
-    WorldItemPickupRsp = 232
+    WORLD_INTERACT_OBJECT_REQUEST: int = 212
+    WORLD_INTERACT_OBJECT_RESPONSE: int = 213
 
-    # Inventory
-    PlayerInventoryReq = 300
-    PlayerInventoryRsp = 301
-    PlayerEquipItemReq = 302
-    PlayerEquipItemRsp = 303
-    PlayerUseItemReq = 304
-    PlayerUseItemRsp = 305
+    WORLD_NPC_SPAWN_NOTIFY: int = 220
+    WORLD_NPC_DESPAWN_NOTIFY: int = 221
+    WORLD_NPC_DIALOGUE_START_REQUEST: int = 222
+    WORLD_NPC_DIALOGUE_START_RESPONSE: int = 223
+    WORLD_NPC_DIALOGUE_OPTION_REQUEST: int = 224
+    WORLD_NPC_DIALOGUE_OPTION_RESPONSE: int = 225
+    WORLD_NPC_MOVE_NOTIFY: int = 226
 
-    # Combat
-    PlayerAttackNotify = 400
-    PlayerTakeDamageNotify = 401
-    PlayerDieNotify = 402
-    EnemySpawnNotify = 403
-    EnemyDieNotify = 404
+    WORLD_ITEM_DROP_NOTIFY: int = 230
+    WORLD_ITEM_PICKUP_REQUEST: int = 231
+    WORLD_ITEM_PICKUP_RESPONSE: int = 232
 
-    # Abilities
-    AbilityCastReq = 500
-    AbilityCastRsp = 501
-    AbilityResultNotify = 502
+    # Inventory Management
+    PLAYER_INVENTORY_REQUEST: int = 300
+    PLAYER_INVENTORY_RESPONSE: int = 301
+    PLAYER_EQUIP_ITEM_REQUEST: int = 302
+    PLAYER_EQUIP_ITEM_RESPONSE: int = 303
+    PLAYER_USE_ITEM_REQUEST: int = 304
+    PLAYER_USE_ITEM_RESPONSE: int = 305
 
-    # Chat
-    ChatSendReq = 600
-    ChatSendRsp = 601
-    ChatMessageNotify = 602
+    # Combat Management
+    PLAYER_ATTACK_NOTIFY: int = 400
+    PLAYER_TAKE_DAMAGE_NOTIFY: int = 401
+    PLAYER_DIE_NOTIFY: int = 402
+    ENEMY_SPAWN_NOTIFY: int = 403
+    ENEMY_DIE_NOTIFY: int = 404
 
-    # Sector / World State
-    SectorEnterReq = 700
-    SectorEnterRsp = 701
-    SectorLeaveNotify = 702
-    SectorStateNotify = 703
+    # Abilities Management
+    ABILITY_CAST_REQUEST: int = 500
+    ABILITY_CAST_RESPONSE: int = 501
+    ABILITY_RESULT_NOTIFY: int = 502
 
-    # Shop / Economy
-    ShopListReq = 800
-    ShopListRsp = 801
-    ShopBuyItemReq = 802
-    ShopBuyItemRsp = 803
-    CurrencyUpdateNotify = 804
+    # Chat Management
+    CHAT_SEND_REQUEST: int = 600
+    CHAT_SEND_RESPONSE: int = 601
+    CHAT_MESSAGE_NOTIFY: int = 602
 
+    # Sector / World State Management
+    SECTOR_ENTER_REQUEST: int = 700
+    SECTOR_ENTER_RESPONSE: int = 701
+    SECTOR_LEAVE_NOTIFY: int = 702
+    SECTOR_STATE_NOTIFY: int = 703
 
-    _opcode_map = {}
+    # Shop / Economy Management
+    SHOP_LIST_REQUEST: int = 800
+    SHOP_LIST_RESPONSE: int = 801
+    SHOP_BUY_ITEM_REQUEST: int = 802
+    SHOP_BUY_ITEM_RESPONSE: int = 803
+    CURRENCY_UPDATE_NOTIFY: int = 804
+
+    _opcode_map: dict[int, str] = {}
 
     @classmethod
     def _initialize_opcode_map(cls):
@@ -112,14 +106,8 @@ class PacketOpcodes:
         return cls._opcode_map.get(opcode, default)
 
     @classmethod
-    def dump_packet_ids(cls, filename_prefix: str = "PacketIds", version: str = "1.0"):
-        cls._initialize_opcode_map()
-        sorted_packets = dict(sorted(cls._opcode_map.items()))
-        import json
-        filename = f"./{filename_prefix}_{version}.json"
-        try:
-            with open(filename, 'w') as f:
-                json.dump(sorted_packets, f, indent=4)
-            loguru.logger.info(f"Dumped packet IDs to {filename}")
-        except IOError as e:
-            loguru.logger.error(f"Error dumping packet IDs: {e}")
+    def dump_to_file(cls, filename: str):
+        with open(filename, 'w') as file:
+            for value in sorted(cls._opcode_map.keys()):
+                name = cls._opcode_map[value]
+                file.write(f"{value}: {name}\n")

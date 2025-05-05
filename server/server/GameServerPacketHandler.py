@@ -34,9 +34,6 @@ class GameServerPacketHandler:
 
         try:
             module = importlib.import_module(handler_package)
-            for name, obj in inspect.getmembers(module):
-                if inspect.isclass(obj) and issubclass(obj, handler_base_class) and obj != handler_base_class:
-                    self.register_packet_handler(obj)
 
             # Recursively scan submodules if needed
             for _, module_name, is_pkg in pkgutil.walk_packages(module.__path__, prefix=module.__name__ + "."):
@@ -63,7 +60,7 @@ class GameServerPacketHandler:
                 state = session.state
 
                 # Session state checks (similar to Java)
-                if opcode == PacketOpcodes.PingReq:
+                if opcode == PacketOpcodes.PING_REQUEST:
                     pass  # Always continue for PingReq
                 #elif opcode == PacketOpcodes.GetPlayerTokenReq:
                 #    if state != SessionState.WAITING_FOR_TOKEN:
@@ -71,7 +68,7 @@ class GameServerPacketHandler:
                 elif state == SessionState.ACCOUNT_BANNED:
                     await session.close()
                     return
-                elif opcode == PacketOpcodes.PlayerLoginReq:
+                elif opcode == PacketOpcodes.PLAYER_LOGIN_REQUEST:
                     if state != SessionState.WAITING_FOR_LOGIN:
                         return
                 #elif opcode == PacketOpcodes.SetPlayerBornDataReq:

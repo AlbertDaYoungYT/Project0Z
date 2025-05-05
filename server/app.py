@@ -2,6 +2,7 @@ import sys
 
 from config.ConfigContainer import ConfigContainer
 from database.repositories.AccountRepository import AccountRepository
+from task.TaskSystem import TaskScheduler
 from utils.AppServices import AppServices
 from GameConstants import GameConstants
 from utils.File import File
@@ -29,16 +30,18 @@ from server.player.Account import Account
 #TODO: Create an admin dashboard for managing game mechanics etc.
 
 
-
 class ProjectZ0:
 
     def __init__(self):
         loguru.logger.info("Loading ProjectZ0...")
-        self.services = AppServices()
+        self.config = ConfigContainer()
+        self.task_scheduler = TaskScheduler(self.config)
         if not os.path.exists("./config.json"):
-            self.services.config.__save__(File("config.json"))
+            self.config.__save__(File("config.json"))
         else:
-            self.services.config.__load__(File("config.json"))
+            self.config = self.config.__load__(File("config.json"))
+        
+        self.services = AppServices(self.config, self.task_scheduler)
     
     async def start(self):
         loguru.logger.info(f"ProjectZ0 Version: {self.services.game_constants.VERSION}")
@@ -49,8 +52,12 @@ class ProjectZ0:
             loguru.logger.info(f"Server Starting in development mode...")
 
         # Start the server in the background
-        self.services.game_server = AsyncGameServer(os.getenv("PROJECTZ0_HOST", "127.0.0.1"), os.getenv("GAME_PORT", 23899), self.services)
-        await self.services.game_server.start()
+        self.services.game_server = AsyncGameServer
+        loop = asyncio.get_running_loop()
+        transport, protocol = await loop.create_datagram_endpoint(
+            lambda: self.services.game_server(os.getenv("PROJECTZ0_HOST", "127.0.0.1"), os.getenv("GAME_PORT", 23899), self.services),
+            local_addr=(os.getenv("PROJECTZ0_HOST", "127.0.0.1"), os.getenv("GAME_PORT", 23899))
+        )
         
         self.services.http_server = HttpServer(os.getenv("PROJECTZ0_HOST", "127.0.0.1"), os.getenv("HTTP_PORT", 24899), self.services)
         web_runner = await self.services.http_server.start()

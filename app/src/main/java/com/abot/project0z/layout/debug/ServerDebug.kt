@@ -37,7 +37,7 @@ import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.MessageDigest
-import kotlin.collections.contentToString
+import kotlin.couchdb_collections.contentToString
 import kotlin.text.toByteArray
 
 fun String.toMD5Hash(): String {

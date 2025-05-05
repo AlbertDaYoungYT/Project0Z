@@ -5,7 +5,7 @@ from server.packets.PacketHandler import PacketHandler
 from server.packets.PacketOpcodes import PacketOpcodes
 
 
-@opcodes(value=PacketOpcodes.PingReq)
+@opcodes(value=PacketOpcodes.PING_REQUEST)
 class HandlerPingReq(PacketHandler):
     async def handle(self, session: GameSession, header: bytes, payload: bytes):
         pass

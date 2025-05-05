@@ -1,5 +1,6 @@
 
 from dataclasses import dataclass
+from enum import Enum
 import inspect
 
 from utils.DatabaseAdapter import Serializable
@@ -17,7 +18,7 @@ class Modelable:
 
 @dataclass
 class Model(Serializable):
-    
+
 
     @classmethod
     def from_class(cls, other) -> Serializable:
@@ -36,6 +37,13 @@ class Model(Serializable):
     def to_class(cls, clazz: Modelable) -> Modelable:
         self_attributes = dict(inspect.getmembers(cls, lambda a:not(inspect.isroutine(a))))
         return clazz.__set__(self_attributes)
-    
 
+class DataStores(Enum):
+    DEFAULT: int = 1
+    HTTP_AUTH_FLOW: int = 2
 
+    AUTHENTICATION: int = 10
+    ACCOUNT: int = 11
+    CERTIFICATE: int = 12
+    CRASH_REPORT: int = 13
+    PLAYER: int = 14

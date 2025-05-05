@@ -21,3 +21,7 @@ class CertificateModel(Model):
     certificate: Certificate | None = None
     private_key: rsa.RSAPrivateKey | None = None
     public_key: rsa.RSAPublicKey | None = None
+
+    original_challenge: str | None = None
+    encrypted_challenge: str | None = None
+    xor_key: str | None = None

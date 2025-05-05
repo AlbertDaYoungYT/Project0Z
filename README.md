@@ -58,7 +58,7 @@
           ├─ Player Actions (movement, interaction, combat)
           └─ Sector Event Handling
 
-[Server (Dockerized)]
+[Server]
     ├── API Service (Python)
     │     ├─ Authentication
     │     ├─ Session Management
@@ -71,46 +71,42 @@
     │     ├─ Procedural World Generator
     │     └─ Combat and Item Systems
     │
-    └── CouchDB
-          ├─ Persistent Player Data
-          ├─ Items, Loadout, Shops
-          ├─ World and Sector States
-          ├─ Event History
-          └─ Lore Database
+    ├── CouchDB
+    │     ├─ Persistent Player Data
+    │     ├─ Items, Loadout, Shops
+    │     ├─ World and Sector States
+    │     ├─ Event History
+    │     └─ Lore Database
+    │
+    └── Redis
+          ├─ Authentication Cache
+          └─ Login Tokens
 ```
 
----
+## 🧭 Roadmap/Feature List
 
-## 📁 Installation (Dev Setup)
+- [x] KCP Real-Time Protocol Setup.
+- [x] CouchDB Integration.
+- [x] Redis Integration.
+- [ ] Implementing Easy Testing for each file.
+- [ ] Core Frameworks for testing and development.
+- [ ] Core Authentication and Session Framework.
+- [ ] IP Banning and other Anticheat measures.
+- [ ] Player Movement and Sector Interaction.
+- [ ] Loadout, Abilities, and Item System.
+- [ ] Lore and game story.
+- [ ] Real-Time Event Generation.
+- [ ] Dynamic Economy Implementation.
+- [ ] Procedural Sector Generation.
+- [ ] Achievements and Progression.
+- [ ] Android Mobile Client Early Alpha.
 
-### Clone and Build
-```bash
-git clone https://github.com/AlbertDaYoungYT/Project0Z.git project-z0/
-cd project-z0/server
-docker build -t project-z0-server .
-docker run -d --name project-z0 -p 23899:23899 24899:24899 project-z0-server
-```
+## 🔄 Unplanned Features
 
-The development servers automatic pull system auto-generates a `.env` file and keeps itself updated via Git hooks, this means you wont be able to use the environment variables it generates. But it has fallbacks in place to prevent any catastrophic events.
-
----
-
-## 🔄 Roadmap
-
-- [x] KCP Real-Time Protocol Setup
-- [x] CouchDB Integration
-- [ ] Redis Integration
-- [ ] Implementing Easy Testing for each file
-- [ ] Core Frameworks for testing and development
-- [ ] Core Authentication and Session Framework
-- [ ] Player Movement and Sector Interaction
-- [ ] Loadout, Abilities, and Item System
-- [ ] Lore and game story
-- [ ] Real-Time Event Generation
-- [ ] Dynamic Economy Implementation
-- [ ] Procedural Sector Generation
-- [ ] Achievements and Progression
-- [ ] Mobile Client Early Alpha
+- [ ] iOS Mobile Client.
+- [ ] Browser Client.
+- [ ] Modding and Plugin Support.
+- [ ] Maybe a Server port to C# or Java?
 
 ---
 

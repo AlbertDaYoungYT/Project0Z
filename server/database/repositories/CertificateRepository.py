@@ -6,6 +6,7 @@ import loguru
 from config.ConfigContainer import ConfigContainer
 from database.DatabaseManager import CouchDBManager
 from database.models.CertificateModel import CertificateModel
+from database.models import DataStores
 from server.player.Account import Account
 
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -13,9 +14,14 @@ from cryptography.x509 import Certificate
 
 class CertificateRepository(CouchDBManager):
 
-    def __init__(self, server_url: str, config: ConfigContainer):
-        self.DATABASE_NAME = config.collection + "_certificates"
-        super().__init__(server_url, config)
+    def __init__(self, server: CouchDBManager, server_url: str, config: ConfigContainer):
+        self.DATABASE_NAME = config.couchdb_collection + "_certificates"
+        self.server_url = server_url
+        self.config = config
+        self.server = server
+
+        self._link_to_cache(DataStores.CERTIFICATE)
+        loguru.logger.debug(f"Initiated CouchDB Repo: {self.DATABASE_NAME}")
 
     async def create_certificate(self,
                                  id: UUID,
@@ -34,7 +40,7 @@ class CertificateRepository(CouchDBManager):
             private_key=private_key,
             public_key=public_key
         )
-        result = await self.save_document(self.DATABASE_NAME, cert_model.to_dict())
+        result = await self.server.save_document(self.DATABASE_NAME, cert_model)
         if result:
             cert_model.certificate_id = result[0]  # Update certificate ID with the CouchDB ID
             return cert_model
@@ -42,7 +48,7 @@ class CertificateRepository(CouchDBManager):
 
     async def get_certificate_by_id(self, id: str) -> CertificateModel | None:
         """Get an certificate by its ID."""
-        doc = await self.get_document(self.DATABASE_NAME, id)
+        doc = await self.server.get_document(self.DATABASE_NAME, id)
         if doc:
             return CertificateModel.from_dict(doc)
         return None
@@ -50,7 +56,7 @@ class CertificateRepository(CouchDBManager):
     async def get_certificate_by_account_id(self, account_id: UUID) -> CertificateModel | None:
         """Get an certificate by its account id."""
         query = {"selector": {"account_id": account_id}}
-        results = await self.find_documents(self.DATABASE_NAME, query)
+        results = await self.server.find_documents(self.DATABASE_NAME, query)
         if results:
             return CertificateModel.from_dict(results[0])
         return None
@@ -58,7 +64,7 @@ class CertificateRepository(CouchDBManager):
     async def get_certificate_by_auth_token(self, auth_token: str) -> CertificateModel | None:
         """Get an certificate by its account id."""
         query = {"selector": {"auth_id": auth_token}}
-        results = await self.find_documents(self.DATABASE_NAME, query)
+        results = await self.server.find_documents(self.DATABASE_NAME, query)
         if results:
             return CertificateModel.from_dict(results[0])
         return None
@@ -66,10 +72,10 @@ class CertificateRepository(CouchDBManager):
     async def update_certificate(self, certificate: CertificateModel) -> CertificateModel | None:
         """Update an existing certificate."""
         doc = certificate.to_dict()
-        existing_doc = await self.get_document(self.DATABASE_NAME, certificate.certificate_id)
+        existing_doc = await self.server.get_document(self.DATABASE_NAME, certificate.certificate_id)
         if existing_doc:
             doc["_rev"] = existing_doc["_rev"]  # Include the revision for updating
-            result = await self.save_document(self.DATABASE_NAME, doc)
+            result = await self.server.save_document(self.DATABASE_NAME, doc)
             return result is not None
         return False
 
@@ -80,10 +86,10 @@ class CertificateRepository(CouchDBManager):
         existing_doc = await self.get_document(self.DATABASE_NAME, certificate.certificate_id)
         if existing_doc:
             doc["_rev"] = existing_doc["_rev"]  # Include the revision for updating
-            result = await self.save_document(self.DATABASE_NAME, doc)
+            result = await self.server.save_document(self.DATABASE_NAME, doc)
             return result is not None
         return False
 
     async def delete_certificate(self, certificate_id: str):
         """Delete an certificate by its ID."""
-        return await self.delete_document(self.DATABASE_NAME, certificate_id)
+        return await self.server.delete_document(self.DATABASE_NAME, certificate_id)

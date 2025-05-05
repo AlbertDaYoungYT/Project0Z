@@ -1,1 +1,13 @@
-{"collection": "projectz0", "connectionUri": "http://192.168.1.2:15984/", "couchdb_user": "projectz0", "couchdb_pass": "1Cr3x8X5TKIPTdrp7xZd", "redis_host": "192.168.1.2", "redis_port": 30059, "redis_user": "root", "redis_pass": "1Cr3x8X5TKIPTdrp7xZd", "dispatchKey": ""}
+{
+    "couchdb_collection": "projectz0",
+    "couchdb_connection_uri": "http://192.168.1.2:15984/",
+    "couchdb_user": "projectz0",
+    "couchdb_pass": "1Cr3x8X5TKIPTdrp7xZd",
+    "redis_host": "192.168.1.2",
+    "redis_port": 30059,
+    "redis_user": "root",
+    "redis_pass": "1Cr3x8X5TKIPTdrp7xZd",
+    "cache_expire_time_seconds": 3600,
+    "max_connections_per_ip_within_time_window": 240,
+    "connection_time_window_seconds": 60
+}

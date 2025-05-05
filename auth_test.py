@@ -44,7 +44,7 @@ def SubmitSigningChallenge(client_id, challenge_submission):
 server_url = "http://127.0.0.1:24899"
 
 # STEP 1 - InitHello
-hello_response = InitialHelloToServer([0, 0, 1])
+hello_response = InitialHelloToServer([0, 0, 2])
 pprint(hello_response)
 
 # STEP 2 - InitAck

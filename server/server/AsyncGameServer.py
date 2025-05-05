@@ -47,10 +47,10 @@ class AsyncGameServer:
     async def _handle_initial_packets(self, data: bytes, addr: tuple) -> bool:
         if len(data) >= 2:
             opcode = struct.unpack('>H', data[:2])[0]
-            if opcode == PacketOpcodes.PingReq:
+            if opcode == PacketOpcodes.PING_REQUEST:
                 await self.session_manager.create_session(self.transport, addr)
                 return True
-            if opcode == PacketOpcodes.PlayerLoginReq:
+            if opcode == PacketOpcodes.PLAYER_LOGIN_REQUEST:
                 await self.session_manager.create_session(self.transport, addr)
                 return True
             # Add other initial packet handling here (e.g., token request)
@@ -58,7 +58,7 @@ class AsyncGameServer:
 
     def connection_made(self, transport):
         self.transport = transport
-        loguru.logger.info(f'Server started on {self.host}:{self.port}')
+        loguru.logger.info(f'Server started on udp://{self.host}:{self.port}')
 
     def connection_lost(self, exc):
         loguru.logger.info(f'Server socket closed "{exc}"')
@@ -66,9 +66,9 @@ class AsyncGameServer:
     def datagram_received(self, data, addr):
         asyncio.create_task(self.handle_datagram(data, addr))
     
-    async def start(self):
-        loop = asyncio.get_running_loop()
-        transport, protocol = await loop.create_datagram_endpoint(
-            lambda: AsyncGameServer(self.host, self.port, self.services),
-            local_addr=(self.host, self.port)
-        )
+#    async def start(self):
+#        loop = asyncio.get_running_loop()
+#        transport, protocol = await loop.create_datagram_endpoint(
+#            lambda: AsyncGameServer(self.host, self.port, self.services),
+#            local_addr=(self.host, self.port)
+#        )

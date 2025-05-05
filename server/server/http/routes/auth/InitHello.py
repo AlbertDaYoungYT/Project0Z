@@ -5,6 +5,7 @@ import secrets
 import time
 from aiohttp import web
 import requests
+from database.models.CertificateModel import CertificateModel
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 
@@ -54,7 +55,7 @@ async def returning_greeting_handler(request: web.Request, services: AppServices
     #     "session_cert_model": certificate_model.to_dict(),
     #     "_timestamp": time.time()
     # }
-    client_auth_params = services.redis_server.get_redis().get(f"CLIENT::CERTIFICATE::{request.remote}::{id}")
+    client_auth_params: CertificateModel | None = await services.redisdb.get(f"CLIENT::CERTIFICATE::{request.remote}::{id}", CertificateModel)
     if client_auth_params == None:
         loguru.logger.warning(Codes.DATABASE_RECORD_NOT_FOUND.to_logger())
         client_cert_model = await services.certificate_repository.get_certificate_by_auth_token(
@@ -62,7 +63,7 @@ async def returning_greeting_handler(request: web.Request, services: AppServices
         )
         if client_cert_model == None: return Codes.DATABASE_RECORD_NOT_FOUND.to_response()
     
-    if client_auth_params["auth_id"] != auth_token: return Codes.CLIENT_AUTHENTICATION_TOKEN_INVALID.to_response()
+    if client_auth_params.auth_id != auth_token: return Codes.CLIENT_AUTHENTICATION_TOKEN_INVALID.to_response()
 
     # Generate new Authentication Token and ID
     new_id = UUID(secrets.token_hex(16))
@@ -70,7 +71,7 @@ async def returning_greeting_handler(request: web.Request, services: AppServices
 
 
     # Update Clients Certificates with new Authentication Token and ID
-    services.redis_server.get_redis().delete(f"CLIENT::CERTIFICATE::{request.remote}::{id}")
+    await services.redisdb.delete(f"CLIENT::CERTIFICATE::{request.remote}::{id}")
     await services.certificate_repository.delete_certificate(id)
 
     database_response = await services.certificate_repository.create_certificate(
@@ -82,12 +83,11 @@ async def returning_greeting_handler(request: web.Request, services: AppServices
     )
     if database_response == None: return Codes.DATABASE_QUERY_ERROR.to_response()
 
-    services.redis_server.get_redis().set(f"CLIENT::CERTIFICATE::{request.remote}::{new_id}", {
+    await services.redisdb.add(f"CLIENT::CERTIFICATE::{request.remote}::{new_id}", CertificateModel.from_dict({
         "id": new_id,
         "auth_id": new_auth_token,
-        "session_cert_model": database_response.to_dict(),
-        "_timestamp": time.time()
-    })
+        "session_cert_model": database_response.to_dict()
+    }))
 
     return web.json_response({
         "id": new_id,

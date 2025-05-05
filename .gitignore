@@ -21,3 +21,6 @@ __pycache__/
 
 official_cert.pem
 official_key.pem
+
+.vscode/
+.idea/

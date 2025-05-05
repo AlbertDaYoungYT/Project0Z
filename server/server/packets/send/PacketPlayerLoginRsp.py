@@ -6,7 +6,7 @@ import hashlib
 
 
 class PacketPlayerLoginRsp(BasePacket):
-    opcode = PacketOpcodes.PlayerLoginRsp
+    opcode = PacketOpcodes.PLAYER_LOGIN_RESPONSE
 
     def __init__(self, session: GameSession):
         super().__init__(opcode=self.opcode)
