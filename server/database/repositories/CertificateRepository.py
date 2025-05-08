@@ -5,8 +5,7 @@ import loguru
 
 from config.ConfigContainer import ConfigContainer
 from database.DatabaseManager import CouchDBManager
-from database.models.CertificateModel import CertificateModel
-from database.models import DataStores
+from database.Models import *
 from server.player.Account import Account
 
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -20,7 +19,7 @@ class CertificateRepository(CouchDBManager):
         self.config = config
         self.server = server
 
-        self._link_to_cache(DataStores.CERTIFICATE)
+        self._link_to_cache(db=DataStores.CERTIFICATE)
         loguru.logger.debug(f"Initiated CouchDB Repo: {self.DATABASE_NAME}")
 
     async def create_certificate(self,

@@ -1,7 +1,10 @@
+import io
 import sys
+import unittest
 
 from config.ConfigContainer import ConfigContainer
 from database.repositories.AccountRepository import AccountRepository
+from utils.Testing import BaseTest
 from task.TaskSystem import TaskScheduler
 from utils.AppServices import AppServices
 from GameConstants import GameConstants
@@ -25,10 +28,26 @@ from server.AsyncGameServer import AsyncGameServer
 from server.http.HttpServer import HttpServer
 from server.player.Account import Account
 
+loguru.logger.remove()
+loguru.logger.add(sys.stderr, level="INFO")
 
 #TODO: Create a log transport system to sync logcat errors to the server (Maybe via http)
 #TODO: Create an admin dashboard for managing game mechanics etc.
 
+
+def get_test_cases_from_suite(suite):
+    """Recursively extracts TestCase instances that inherit from BaseTest."""
+    test_cases = []
+    try:
+        for item in suite:
+            if isinstance(item, unittest.TestCase) and issubclass(item.__class__, BaseTest) and item.__class__ != BaseTest:
+                test_cases.append(item)
+            elif isinstance(item, unittest.TestSuite):
+                test_cases.extend(get_test_cases_from_suite(item))
+    except TypeError:
+        if isinstance(suite, unittest.TestCase) and issubclass(suite.__class__, BaseTest) and suite.__class__ != BaseTest:
+            test_cases.append(suite)
+    return test_cases
 
 class ProjectZ0:
 
@@ -36,14 +55,33 @@ class ProjectZ0:
         loguru.logger.info("Loading ProjectZ0...")
         self.config = ConfigContainer()
         self.task_scheduler = TaskScheduler(self.config)
+
         if not os.path.exists("./config.json"):
             self.config.__save__(File("config.json"))
         else:
             self.config = self.config.__load__(File("config.json"))
         
         self.services = AppServices(self.config, self.task_scheduler)
+
+        if os.getenv("SERVER_TEST_MODE", "false") == "true":
+            loguru.logger.remove()
+            loguru.logger.add(sys.stderr, level="DEBUG")
+
+            loguru.logger.debug(f"Server Initiating Test Mode...")
+        
+            # Initiate Testing Functions
+            from utils.Testing import run_tests, TestPriority
+            import tests
+            run_tests(log_summary=True)
+
+            exit()
+        else:
+            from utils.Testing import run_tests, TestPriority
+            import tests
+            run_tests(priorities_to_run=[TestPriority.CORE, TestPriority.DATABASE, TestPriority.GAME, TestPriority.PERMISSION], log_summary=True)
+
     
-    async def start(self):
+    async def initiate(self):
         loguru.logger.info(f"ProjectZ0 Version: {self.services.game_constants.VERSION}")
 
         if os.getenv("GIT_BRANCH", "main") == "main":
@@ -97,4 +135,4 @@ class ProjectZ0:
 
 
 
-asyncio.run(ProjectZ0().start())
+asyncio.run(ProjectZ0().initiate())

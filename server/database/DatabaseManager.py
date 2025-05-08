@@ -5,7 +5,7 @@ import asyncio
 import couchdb
 
 from config.ConfigContainer import ConfigContainer
-from database.models import DataStores, Model
+from database.Models import *
 from connectors.DatabaseLink import DatabaseLinkConnector
 from task.TaskSystem import TaskScheduler
 from utils.DatabaseAdapter import Serializable
@@ -14,9 +14,9 @@ from utils.DatabaseAdapter import Serializable
 class RedisDBManager:
 
     def __init__(self, config: ConfigContainer, db: DataStores = DataStores.DEFAULT):
+        self.server_db = db
         self.config = config
         self.server = None
-        self.server_db = db
 
         self.is_cache_instance_link: bool = False
         self.instance_link: DatabaseLinkConnector = None
@@ -69,13 +69,13 @@ class RedisDBManager:
             else:
                 res = await asyncio.to_thread(self.server.set, key, value.to_json(), **kwargs)
             if res is True:
-                loguru.logger.debug(f"Item added to 'DataStore-{self.server_db}' with key: {key}")
+                loguru.logger.debug(f"Item added to 'DataStore-{self.server_db.value}' with key: {key}")
                 return True
             else:
-                loguru.logger.error(f"Failed to add item to 'DataStore-{self.server_db}': {res}")
+                loguru.logger.error(f"Failed to add item to 'DataStore-{self.server_db.value}': {res}")
                 return False
         except Exception as e:
-            loguru.logger.error(f"Error adding item to 'DataStore-{self.server_db}': {e}")
+            loguru.logger.error(f"Error adding item to 'DataStore-{self.server_db.value}': {e}")
             return False
 
     async def get(self, key: str, clazz: Model):
@@ -86,13 +86,13 @@ class RedisDBManager:
         try:
             value = await asyncio.to_thread(self.server.get, key)
             if value is not None:
-                loguru.logger.debug(f"Item retrieved from 'DataStore-{self.server_db}' with key: {key}")
+                loguru.logger.debug(f"Item retrieved from 'DataStore-{self.server_db.value}' with key: {key}")
                 return clazz.from_json(value)
             else:
-                loguru.logger.warning(f"No item found with key '{key}' in 'DataStore-{self.server_db}'.")
+                loguru.logger.warning(f"No item found with key '{key}' in 'DataStore-{self.server_db.value}'.")
                 return None
         except Exception as e:
-            loguru.logger.error(f"Error retrieving item from 'DataStore-{self.server_db}': {e}")
+            loguru.logger.error(f"Error retrieving item from 'DataStore-{self.server_db.value}': {e}")
             return None
 
     async def delete(self, key: str):
@@ -103,16 +103,16 @@ class RedisDBManager:
         try:
             res = await asyncio.to_thread(self.server.delete, key)
             if res == 1:
-                loguru.logger.debug(f"Item deleted from 'DataStore-{self.server_db}' with key: {key}")
+                loguru.logger.debug(f"Item deleted from 'DataStore-{self.server_db.value}' with key: {key}")
                 return True
             elif res == 0:
-                loguru.logger.warning(f"No item found with key '{key}' in 'DataStore-{self.server_db}'.")
+                loguru.logger.warning(f"No item found with key '{key}' in 'DataStore-{self.server_db.value}'.")
                 return False
             else:
-                loguru.logger.error(f"Failed to delete item from 'DataStore-{self.server_db}': {res}")
+                loguru.logger.error(f"Failed to delete item from 'DataStore-{self.server_db.value}': {res}")
                 return False
         except Exception as e:
-            loguru.logger.error(f"Error deleting item from 'DataStore-{self.server_db}': {e}")
+            loguru.logger.error(f"Error deleting item from 'DataStore-{self.server_db.value}': {e}")
             return False
 
     async def exists(self, key: str):
@@ -123,13 +123,13 @@ class RedisDBManager:
         try:
             res = await asyncio.to_thread(self.server.exists, key)
             if res == 1:
-                loguru.logger.debug(f"Item exists in 'DataStore-{self.server_db}' with key: {key}")
+                loguru.logger.debug(f"Item exists in 'DataStore-{self.server_db.value}' with key: {key}")
                 return True
             else:
-                loguru.logger.info(f"No item found with key '{key}' in 'DataStore-{self.server_db}'.")
+                loguru.logger.info(f"No item found with key '{key}' in 'DataStore-{self.server_db.value}'.")
                 return False
         except Exception as e:
-            loguru.logger.error(f"Error checking existence of item in 'DataStore-{self.server_db}': {e}")
+            loguru.logger.error(f"Error checking existence of item in 'DataStore-{self.server_db.value}': {e}")
             return False
         
 
@@ -156,7 +156,7 @@ class CouchDBManager:
             loguru.logger.error(f"Failed to connect to CouchDB server: {e}")
             self.server = None
 
-    def _link_to_cache(self, db: DataStores = DataStores.DEFAULT):
+    def _link_to_cache(self, db: DataStores):
         loguru.logger.info(f"Attempting to Link CouchDB to Redis Cache Instance...")
         self.cache_instance_link = DatabaseLinkConnector(
             RedisDBManager(self.config, db=db),

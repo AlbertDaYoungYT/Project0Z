@@ -79,7 +79,7 @@
     │     └─ Lore Database
     │
     └── Redis
-          ├─ Authentication Cache
+          ├─ Database Cache
           └─ Login Tokens
 ```
 
@@ -88,9 +88,9 @@
 - [x] KCP Real-Time Protocol Setup.
 - [x] CouchDB Integration.
 - [x] Redis Integration.
-- [ ] Implementing Easy Testing for each file.
-- [ ] Core Frameworks for testing and development.
+- [x] Core Frameworks for testing and development.
 - [ ] Core Authentication and Session Framework.
+- [ ] Implementing Easy Testing for each file.
 - [ ] IP Banning and other Anticheat measures.
 - [ ] Player Movement and Sector Interaction.
 - [ ] Loadout, Abilities, and Item System.

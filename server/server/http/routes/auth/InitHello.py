@@ -5,7 +5,7 @@ import secrets
 import time
 from aiohttp import web
 import requests
-from database.models.CertificateModel import CertificateModel
+from database.Models import *
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 

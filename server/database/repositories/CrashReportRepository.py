@@ -5,8 +5,7 @@ import loguru
 
 from config.ConfigContainer import ConfigContainer
 from database.DatabaseManager import CouchDBManager
-from database.models.CrashReportModel import CrashReportModel
-from database.models import DataStores
+from database.Models import *
 from server.player.Account import Account
 
 
@@ -18,7 +17,7 @@ class CrashReportRepository(CouchDBManager):
         self.config = config
         self.server = server
 
-        self._link_to_cache(DataStores.CRASH_REPORT)
+        self._link_to_cache(db=DataStores.CRASH_REPORT)
         loguru.logger.debug(f"Initiated CouchDB Repo: {self.DATABASE_NAME}")
 
     async def create_crash_report(self, account: Account, crash_report: list[dict], logcat_report: list[dict]) -> CrashReportModel:

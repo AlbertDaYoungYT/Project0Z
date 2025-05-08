@@ -5,14 +5,23 @@ from uuid import UUID
 import loguru
 
 
+from server.player.Account import Account
 from server.states.SessionState import SessionState
 from utils.DatabaseAdapter import Serializable
+from utils.Vectors import Vector2d
 
 
 @dataclass
 class Player:
     id: UUID
     session: object
+
+    account: Account
+    account_id: UUID
+    username: str
+
+    position: Vector2d
+
 
     has_sent_login_packets: bool
 

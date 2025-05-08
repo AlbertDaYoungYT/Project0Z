@@ -1,6 +1,6 @@
 import json, loguru
 from aiohttp import web
-from database.models.CrashReportModel import CrashReportModel
+from database.Models import *
 from server.player.Account import Account
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)

@@ -104,3 +104,7 @@ class Codes(Enum):
     MEMORY_OVERLOAD = ErrorDetails(code=905, name="MEMORY_OVERLOAD", message="The server ran out of memory processing the request.", http_status=500)
     RATE_LIMIT_EXCEEDED = ErrorDetails(code=906, name="RATE_LIMIT_EXCEEDED", message="Rate limit exceeded. Slow down your requests.", http_status=429)
     FATAL_SERVER_ERROR = ErrorDetails(code=907, name="FATAL_SERVER_ERROR", message="The server encountered a fatal error.", http_status=500)
+
+    # (10xx) - Critical warnings or errors
+    DIRECTORY_EXISTS = ErrorDetails(code=1000, name="DIRECTORY_EXISTS", message="The Directory or File already exists.", http_status=500)
+    FILE_NOT_FOUND = ErrorDetails(code=1001, name="FILE_NOT_FOUND", message="The File was not found.", http_status=500)

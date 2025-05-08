@@ -10,13 +10,13 @@ class Vector1d:
     def subtract(self, other):
         return Vector1d(self.x - other.x)
 
-    def multiply(self, scalar):
-        return Vector1d(self.x * scalar)
+    def multiply(self, other):
+        return Vector1d(self.x * other.x)
 
-    def divide(self, scalar):
-        if scalar == 0:
-            raise ValueError("Scalar cannot be zero.")
-        return Vector1d(self.x / scalar)
+    def divide(self, other):
+        if other.x == 0:
+            raise ValueError("Vector cannot be zero.")
+        return Vector1d(self.x / other.x)
 
     def get_magnitude(self):
         return abs(self.x)
@@ -30,6 +30,17 @@ class Vector1d:
     def __str__(self):
         return f"({self.x})"
 
+    def __eq__(self, other):
+        if not isinstance(other, Vector1d):
+            return NotImplemented
+        return self.x == other.x
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Vector1d(x={self.x})"
+
 class Vector2d:
     def __init__(self, x=0.0, y=0.0):
         self.x = float(x)
@@ -41,13 +52,13 @@ class Vector2d:
     def subtract(self, other):
         return Vector2d(self.x - other.x, self.y - other.y)
 
-    def multiply(self, scalar):
-        return Vector2d(self.x * scalar, self.y * scalar)
+    def multiply(self, other):
+        return Vector2d(self.x * other.x, self.y * other.y)
 
-    def divide(self, scalar):
-        if scalar == 0:
-            raise ValueError("Scalar cannot be zero.")
-        return Vector2d(self.x / scalar, self.y / scalar)
+    def divide(self, other):
+        if other.x == 0 or other.y == 0:
+            raise ValueError("Vector cannot be zero.")
+        return Vector2d(self.x / other.x, self.y / other.y)
 
     def get_magnitude(self):
         return math.sqrt(self.x**2 + self.y**2)
@@ -61,6 +72,17 @@ class Vector2d:
     def __str__(self):
         return f"({self.x}, {self.y})"
 
+    def __eq__(self, other):
+        if not isinstance(other, Vector2d):
+            return NotImplemented
+        return self.x == other.x and self.y == other.y
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Vector2d(x={self.x}, y={self.y})"
+
 class Vector3d:
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.x = float(x)
@@ -73,13 +95,13 @@ class Vector3d:
     def subtract(self, other):
         return Vector3d(self.x - other.x, self.y - other.y, self.z - other.z)
 
-    def multiply(self, scalar):
-        return Vector3d(self.x * scalar, self.y * scalar, self.z * scalar)
+    def multiply(self, other):
+        return Vector3d(self.x * other.x, self.y * other.y, self.z * other.z)
 
-    def divide(self, scalar):
-        if scalar == 0:
-            raise ValueError("Scalar cannot be zero.")
-        return Vector3d(self.x / scalar, self.y / scalar, self.z / scalar)
+    def divide(self, other):
+        if other.x == 0 or other.y == 0 or other.z == 0:
+            raise ValueError("Vector cannot be zero.")
+        return Vector3d(self.x / other.x, self.y / other.y, self.z / other.z)
 
     def get_magnitude(self):
         return math.sqrt(self.x**2 + self.y**2 + self.z**2)
@@ -100,6 +122,17 @@ class Vector3d:
     def __str__(self):
         return f"({self.x}, {self.y}, {self.z})"
 
+    def __eq__(self, other):
+        if not isinstance(other, Vector3d):
+            return NotImplemented
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Vector3d(x={self.x}, y={self.y}, z={self.z})"
+
 class Vector4d:
     def __init__(self, x=0.0, y=0.0, z=0.0, w=0.0):
         self.x = float(x)
@@ -113,13 +146,13 @@ class Vector4d:
     def subtract(self, other):
         return Vector4d(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
 
-    def multiply(self, scalar):
-        return Vector4d(self.x * scalar, self.y * scalar, self.z * scalar, self.w * scalar)
+    def multiply(self, other):
+        return Vector4d(self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w)
 
-    def divide(self, scalar):
-        if scalar == 0:
-            raise ValueError("Scalar cannot be zero.")
-        return Vector4d(self.x / scalar, self.y / scalar, self.z / scalar, self.w / scalar)
+    def divide(self, other):
+        if other.x == 0 or other.y == 0 or other.z == 0 or other.w == 0:
+            raise ValueError("Vector cannot be zero.")
+        return Vector4d(self.x / other.x, self.y / other.y, self.z / other.z, self.w / other.w)
 
     def get_magnitude(self):
         return math.sqrt(self.x**2 + self.y**2 + self.z**2 + self.w**2)
@@ -133,7 +166,16 @@ class Vector4d:
     def __str__(self):
         return f"({self.x}, {self.y}, {self.z}, {self.w})"
 
+    def __eq__(self, other):
+        if not isinstance(other, Vector4d):
+            return NotImplemented
+        return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Vector4d(x={self.x}, y={self.y}, z={self.z}, w={self.w})"
 
 class Vector2dBoxArea:
     def __init__(self, x1=0.0, y1=0.0, x2=0.0, y2=0.0):
@@ -170,7 +212,19 @@ class Vector2dBoxArea:
 
     def __str__(self):
         return f"(({self.x1}, {self.y1}) -> ({self.x2}, {self.y2}))"
-    
+
+    def __eq__(self, other):
+        if not isinstance(other, Vector2dBoxArea):
+            return NotImplemented
+        return (self.x1 == other.x1 and self.y1 == other.y1 and
+                self.x2 == other.x2 and self.y2 == other.y2)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Vector2dBoxArea(x1={self.x1}, y1={self.y1}, x2={self.x2}, y2={self.y2})"
+
 class Vector2dPolygon:
     def __init__(self, points=None):
         self.points = [p.clone() for p in points] if points else []
@@ -248,3 +302,19 @@ class Vector2dPolygon:
 
     def __str__(self):
         return f"Polygon({', '.join(str(p) for p in self.points)})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Vector2dPolygon):
+            return NotImplemented
+        if len(self.points) != len(other.points):
+            return False
+        for i in range(len(self.points)):
+            if self.points[i] != other.points[i]:
+                return False
+        return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Vector2dPolygon(points=[{', '.join(repr(p) for p in self.points)}])"

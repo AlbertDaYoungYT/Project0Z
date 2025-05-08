@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import dataclasses
 import os
 
 from utils.Vectors import Vector2d
@@ -33,4 +34,4 @@ class GameConstants(object):
 
 
     # Other Game Constants
-    START_POSITION: Vector2d = Vector2d(0, 0)
+    START_POSITION: Vector2d = dataclasses.field(default_factory=lambda: Vector2d(1.0, 2.0))

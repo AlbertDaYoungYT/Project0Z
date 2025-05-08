@@ -9,7 +9,7 @@ from database.repositories.CrashReportRepository import CrashReportRepository
 from database.repositories.CertificateRepository import CertificateRepository
 from database.DatabaseManager import CouchDBManager, RedisDBManager
 from security.DDOSProtection import DDOSProtectionSystem
-from database.models import DataStores
+from database.Models import *
 from task.TaskSystem import TaskScheduler
 from utils.Crypto import CertificateAuthority, SessionKeyManager
 

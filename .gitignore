@@ -24,3 +24,4 @@ official_key.pem
 
 .vscode/
 .idea/
+.pytest_cache/

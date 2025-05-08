@@ -3,7 +3,7 @@ import json, loguru, hashlib, secrets
 from uuid import UUID
 import time
 from aiohttp import web
-from database.models.CertificateModel import CertificateModel
+from database.Models import *
 from utils.AppServices import AppServices
 from utils.Errors import Codes  # Import the Router instance (see step 3)
 

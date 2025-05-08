@@ -96,7 +96,7 @@ class Serializable:
                             Encoding.PEM
                         )).decode()
             else:
-                return value
+                return None
 
         return {field.name: _convert_value(getattr(self, field.name))
                 for field in fields(self)}
@@ -185,7 +185,7 @@ class Serializable:
                 )
                 return certificate
             else:
-                return value
+                return None
 
         field_types = {field.name: field.type for field in fields(cls)}
         # Handle the case where a field is missing in the JSON data.
