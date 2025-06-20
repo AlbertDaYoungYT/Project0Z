@@ -8,7 +8,7 @@ import loguru
 from server.player.Account import Account
 from server.states.SessionState import SessionState
 from utils.DatabaseAdapter import Serializable
-from utils.Vectors import Vector2d
+from utils.types.Vectors import Vector2d
 
 
 @dataclass

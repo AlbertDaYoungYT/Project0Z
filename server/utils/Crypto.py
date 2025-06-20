@@ -25,7 +25,7 @@ import os, pathlib
 
 import loguru
 
-from utils.Errors import Codes
+from utils.types.Errors import Codes
 
 class CertificateAuthority:
     def __init__(self, 

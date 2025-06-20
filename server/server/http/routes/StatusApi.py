@@ -4,7 +4,7 @@ import time
 import loguru
 from aiohttp import web
 from utils.AppServices import AppServices
-from utils.Errors import Codes  # Import the Router instance (see step 3)
+from utils.types.Errors import Codes  # Import the Router instance (see step 3)
 from dataclasses import fields
 import requests
 

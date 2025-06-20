@@ -10,14 +10,20 @@ from database.repositories.CertificateRepository import CertificateRepository
 from database.DatabaseManager import CouchDBManager, RedisDBManager
 from security.DDOSProtection import DDOSProtectionSystem
 from database.Models import *
+from utils.registry import Registry
 from task.TaskSystem import TaskScheduler
 from utils.Crypto import CertificateAuthority, SessionKeyManager
 
 
 class AppServices:
+
+    # Registries
+    asset_registry = Registry()
+
     def __init__(self, config: ConfigContainer, task_system: TaskScheduler):
         self.console_args = sys.argv[1:]
         self.uptime = time.time()
+        self._keep_alive = True
         
         self.config: ConfigContainer = config
         self.task_system: TaskScheduler = task_system
@@ -39,6 +45,11 @@ class AppServices:
         self.redisdb = RedisDBManager(self.config, db=DataStores.DEFAULT)
 
         self.ddos_protection_system = DDOSProtectionSystem(self.config)
+
+
+        # The Registry instance 'asset_registry' is created at the class level.
+        # If Registry.__init__ is modified to add itself to _global_registry, this line is not needed.
+        # self.asset_registry.__init__("asset_registry") # This line is redundant and potentially problematic.
 
 
 class VariableTunnel:

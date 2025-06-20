@@ -1,9 +1,14 @@
 
-
-
+from enum import Enum
 import struct
 
 from server.packets.Opcodes import OpcodeMeta
+
+
+
+class PacketType(Enum):
+    BASE_PACKET: bytes = b"\x00"
+    PROTOCOL_PACKET: bytes = b"\x01"
 
 
 class BasePacket(metaclass=OpcodeMeta):
@@ -11,6 +16,7 @@ class BasePacket(metaclass=OpcodeMeta):
     disabled = False
     
     def __init__(self, opcode: int, build_header: bool = False):
+        self.packet_type = PacketType.BASE_PACKET
         self.should_encrypt: bool = True
         self.opcode: int = opcode
         self.should_build_header: bool = build_header
@@ -39,6 +45,9 @@ class BasePacket(metaclass=OpcodeMeta):
 
         buffer = bytearray()
 
+        # Write Packet type (unsigned short, 2 bytes)
+        buffer.extend(struct.pack('>H', self.packet_type))
+
         # Write opcode (unsigned short, 2 bytes)
         buffer.extend(struct.pack('>H', self.opcode))
 
@@ -55,3 +64,28 @@ class BasePacket(metaclass=OpcodeMeta):
         buffer.extend(self.data)
 
         return bytes(buffer)
+    
+
+
+class ProtocolPacket(BasePacket):
+
+    def __init__(self, opcode: int, stage_id: int = 0, build_header: bool = False):
+        self.stage_id: int = stage_id
+        super().__init__(opcode, build_header)
+
+        self.packet_type = PacketType.PROTOCOL_PACKET
+
+    def build(self):
+        if self.header is None:
+            self.header = b''
+        if self.data is None:
+            self.data = b''
+        
+        header_buffer = bytearray()
+
+        header_buffer.extend(struct.pack('>H', self.stage_id))
+        header_buffer.extend(self.header)
+
+        self.set_header(bytes(header_buffer))
+
+        return super().build()

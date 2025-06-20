@@ -16,7 +16,7 @@ from uuid import UUID
 # Define a type variable for Dataclasses, bounded to the base class.
 _T = TypeVar('_T', bound=dataclass)
 
-
+@dataclass
 class Serializable:
     """
     A mixin class that adds JSON export functionality to dataclasses.
@@ -208,3 +208,14 @@ class Serializable:
         """
         data = json.loads(json_str)
         return cls.from_dict(data)
+
+
+class Exportable(Serializable):
+
+    @classmethod
+    def to_dict(cls) -> Dict[str, Any]:
+        return cls.to_dict()
+    
+    @classmethod
+    def to_json(cls, indent = 2) -> str:
+        return cls.to_json(indent=indent)

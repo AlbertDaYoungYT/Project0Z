@@ -1,5 +1,5 @@
 from utils.Testing import BaseTest, register_test_class, priority, TestPriority
-from utils.Vectors import *
+from utils.types.Vectors import *
 
 
 @register_test_class

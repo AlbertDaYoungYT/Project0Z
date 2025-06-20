@@ -6,6 +6,7 @@ from server.GameServerPacketHandler import GameServerPacketHandler
 from server.GameSessionManager import GameSessionManager
 from server.packets.PacketHandler import PacketHandler
 from server.packets.PacketOpcodes import PacketOpcodes
+from server.packets.PacketUtils import decode_packet_data, decode_packet_opcode
 from utils.AppServices import AppServices
 
 
@@ -13,7 +14,7 @@ class AsyncGameServer:
     def __init__(self, host, port, services: AppServices):
         self.host = host
         self.port = port
-        self.transport = None
+        self.transport: asyncio.DatagramTransport = None
         self.protocol = None
         self.session_manager = GameSessionManager(services)
         self.packet_handler = GameServerPacketHandler(PacketHandler, services) 
@@ -23,11 +24,12 @@ class AsyncGameServer:
     async def handle_datagram(self, data: bytes, addr):
         loguru.logger.debug(data)
         if len(data) >= 4: # Assuming opcode (2 bytes) and header length (2 bytes)
-            opcode = struct.unpack('>H', data[:2])[0]
-            header_length = struct.unpack('>I', data[2:6])[0]
-            header = data[6 : 6 + header_length]
-            payload = data[6 + header_length :]
-            loguru.logger.debug(f"{opcode}, {header_length}, {header}, {payload}")
+            #opcode = struct.unpack('>H', data[:2])[0]
+            #header_length = struct.unpack('>I', data[2:6])[0]
+            #header = data[6 : 6 + header_length]
+            #payload = data[6 + header_length :]
+            packet_type, opcode, header, payload = decode_packet_data(data)
+            loguru.logger.debug(f"{opcode}, {len(header)}, {header}, {payload}")
 
             session = self.session_manager.get_session(addr)
             if session:
@@ -46,7 +48,8 @@ class AsyncGameServer:
 
     async def _handle_initial_packets(self, data: bytes, addr: tuple) -> bool:
         if len(data) >= 2:
-            opcode = struct.unpack('>H', data[:2])[0]
+            opcode = decode_packet_opcode(data)
+            
             if opcode == PacketOpcodes.PING_REQUEST:
                 await self.session_manager.create_session(self.transport, addr)
                 return True
@@ -66,9 +69,13 @@ class AsyncGameServer:
     def datagram_received(self, data, addr):
         asyncio.create_task(self.handle_datagram(data, addr))
     
-#    async def start(self):
-#        loop = asyncio.get_running_loop()
-#        transport, protocol = await loop.create_datagram_endpoint(
-#            lambda: AsyncGameServer(self.host, self.port, self.services),
-#            local_addr=(self.host, self.port)
-#        )
+    async def stop(self):
+        await self.session_manager.stop()
+        self.transport.close()
+    
+    async def start(self):
+        loop = asyncio.get_running_loop()
+        transport, protocol = await loop.create_datagram_endpoint(
+            lambda: self,
+            local_addr=(self.host, self.port)
+        )

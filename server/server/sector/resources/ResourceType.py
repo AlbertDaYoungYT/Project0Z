@@ -1,3 +1,0 @@
-
-
-class ResourceType: pass

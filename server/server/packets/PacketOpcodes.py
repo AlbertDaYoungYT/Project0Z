@@ -1,14 +1,22 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, is_dataclass
+from typing import Any, Dict
 
 import loguru
 
+from utils.DatabaseAdapter import Exportable
 
-class PacketOpcodes:
+
+class PacketOpcodes(Exportable):
     NONE: int = 0
+    SERVER_REASON: int = 1
+    SERVER_OPCODE_SYNC: int = 2
+    SERVER_ERROR_NOTIFY: int = 3
+
 
     # Heartbeat & Ping
-    PING_REQUEST: int = 1
-    PING_RESPONSE: int = 2
+    PING_REQUEST: int = 10
+    PING_RESPONSE: int = 11
+
 
     # Authentication
     CLIENT_XOR_KEY_REQUEST: int = 98

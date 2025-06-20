@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 import secrets
 import struct
+import random
 from uuid import UUID
 import loguru
 
@@ -9,6 +10,7 @@ import loguru
 from server.packets.BasePacket import BasePacket
 from connectors import PlayerAccountConnector
 from server.states.SessionState import SessionState
+from utils.types.Reasons import SocketCloseReason
 from utils import Crypto
 from utils.DatabaseAdapter import Serializable
 
@@ -37,14 +39,32 @@ class GameSession(Serializable):
 
         self.services = services
 
-    def register_session(self, player, account):
+
+        # Session Specific Variables
+        self.randomness_seed: int | None = None
+        self.security_seed: int | None = None
+
+        self.reseed_counter: int = 0
+
+    def register_session(self, player, account) -> None:
         self.player_account_connector = PlayerAccountConnector.Connector(player, account)
         self.state = SessionState.WAITING_FOR_TOKEN
 
-    async def on_connected(self, tunnel):
+    async def on_connected(self, tunnel) -> None:
         loguru.logger.info(f"GameSession connected with tunnel to {self.addr}")
         self.tunnel = tunnel
+
         # Perform any initial setup for the session
+        self.randomness_seed = secrets.token_bytes(16)
+        self.security_seed = secrets.token_bytes(16)
+    
+    async def reseed(self) -> int:
+        self.randomness_seed = secrets.token_bytes(16)
+        self.security_seed = secrets.token_bytes(16)
+        self.reseed_counter += 1
+        return self.reseed_counter
+
+
 
     async def handle_receive(self, data: bytes):
         loguru.logger.info(f"GameSession received data from {self.addr}: {data.hex()}")
@@ -84,7 +104,8 @@ class GameSession(Serializable):
         except Exception as e:
             loguru.logger.debug(f"Unable to send packet to client. {e}")
 
-    async def close(self):
-        loguru.logger.info(f"Closing GameSession for {self.addr}")
+    async def close(self, reason = SocketCloseReason.FATAL_ERROR):
+        loguru.logger.info(f"Closing GameSession for {self.addr} (Reason = {reason.name})")
         if self.transport:
-            self.transport.close() # Depending on asyncio usage, this might need adjustment
+            await self.send(reason.to_response())
+            self.transport.close() # TODO: Depending on asyncio usage, this might need adjustment

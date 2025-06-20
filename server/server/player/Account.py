@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from uuid import UUID
 import uuid
 from utils.DatabaseAdapter import Serializable
-from utils.Locale import Locale
+from utils.types.Locale import Locale
 
 import secrets
 import hashlib
@@ -44,7 +44,8 @@ class Account:
     bank_gold: float
 
     session_key: str
-    permissions: None
+
+
     locale: Locale
     ban_reason: str
     ban_end_time: float
@@ -60,7 +61,7 @@ class Account:
         self.token = None
 
         self.session_key: str = "" # hashlib.sha256(UUID(secrets.token_hex(16)).bytes).hexdigest()
-        self.permissions: None = None
+        
         self.locale: Locale = Locale.ENGLISH
         self.ban_reason: str = ""
         self.ban_end_time: float = 0.0
@@ -73,7 +74,6 @@ class Account:
         if self.token == None:
             self.token = generate_account_token(self.account_id.hex)
 
-    # Add other account-related attributes and methods as needed
 
     def create_session_key(self):
         self.session_key = hashlib.sha256(UUID(secrets.token_hex(16)).bytes).hexdigest()

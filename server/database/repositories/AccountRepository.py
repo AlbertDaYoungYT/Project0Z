@@ -51,8 +51,24 @@ class AccountRepository(CouchDBManager):
         return None
 
     async def get_account_by_token(self, token: str):
-        """Get an account by its email."""
+        """Get an account by its token."""
         query = {"selector": {"token": token}}
+        results = await self.server.find_documents(self.DATABASE_NAME, query)
+        if results:
+            return Account.from_dict(results[0])
+        return None
+
+    async def get_account_by_permission(self, permission: str):
+        """Get an account by its permission."""
+        query = {"selector": {"permission": permission}}
+        results = await self.server.find_documents(self.DATABASE_NAME, query)
+        if results:
+            return Account.from_dict(results[0])
+        return None
+
+    async def get_account_by_group(self, group: str):
+        """Get an account by its group."""
+        query = {"selector": {"group": group}}
         results = await self.server.find_documents(self.DATABASE_NAME, query)
         if results:
             return Account.from_dict(results[0])

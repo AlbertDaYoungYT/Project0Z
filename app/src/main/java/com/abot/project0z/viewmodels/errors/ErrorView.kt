@@ -1,13 +1,13 @@
 package com.abot.project0z.viewmodels.errors
 
-import com.abot.project0z.utils.ErrorDetails
+import com.abot.project0z.utils.Error
 
 object ErrorView {
     fun showError(code: Int, name: String, message: String) {
-        val errorDetails = ErrorDetails(code, name, message)
-        GlobalErrorViewModel.showError(errorDetails)
+        val Error = Error(code, name, message)
+        GlobalErrorViewModel.showError(Error)
     }
-    fun showError(errorDetails: ErrorDetails) {
-        GlobalErrorViewModel.showError(errorDetails)
+    fun showError(Error: Error) {
+        GlobalErrorViewModel.showError(Error)
     }
 }

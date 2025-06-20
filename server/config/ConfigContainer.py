@@ -2,7 +2,7 @@ from dataclasses import *
 import inspect
 import json
 
-from utils.File import File
+import loguru
 
 @dataclass
 class ConfigContainer:
@@ -25,18 +25,22 @@ class ConfigContainer:
 
 
     def __json__(self):
+        loguru.logger.info("Serializing config file...")
         return {key: getattr(self, key) for key in inspect.getfullargspec(self.__init__).args if key != 'self'}
 
     def __decode__(self, dct):
+        loguru.logger.info("Decoding config file...")
         cls_attributes = inspect.getfullargspec(ConfigContainer.__init__).args
         if all(key in dct for key in cls_attributes if key != 'self'):
             return ConfigContainer(**dct)
         return dct
     
-    def __load__(self, file: File):
+    def __load__(self, file):
+        loguru.logger.info("Loading config file...")
         return json.loads(file.read(), object_hook=self.__decode__)
     
-    def __save__(self, file: File):
+    def __save__(self, file):
+        loguru.logger.info("Saving config file...")
         file.write(json.dumps(self, default=lambda o: o.__json__() if hasattr(o, '__json__') else None))
 
     

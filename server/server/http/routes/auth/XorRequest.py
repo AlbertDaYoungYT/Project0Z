@@ -3,7 +3,7 @@ import time
 from aiohttp import web
 from database.Models import *
 from utils.AppServices import AppServices
-from utils.Errors import Codes  # Import the Router instance (see step 3)
+from utils.types.Errors import Codes  # Import the Router instance (see step 3)
 
 # TODO: Temporary XOR Implementation
 async def xor_key_create_request_handler(request: web.Request, services: AppServices):

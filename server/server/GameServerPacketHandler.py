@@ -7,6 +7,8 @@ import loguru
 from server.GameSession import GameSession, SessionState
 from server.packets.PacketHandler import PacketHandler
 from server.packets.PacketOpcodes import PacketOpcodes
+from server.event.server.ReceivePacketEvent import ReceivePacketEvent
+from utils.types.Reasons import SocketCloseReason
 from utils.AppServices import AppServices
 
 
@@ -66,7 +68,7 @@ class GameServerPacketHandler:
                 #    if state != SessionState.WAITING_FOR_TOKEN:
                 #        return
                 elif state == SessionState.ACCOUNT_BANNED:
-                    await session.close()
+                    await session.close(reason=SocketCloseReason.CLIENT_ACCOUNT_BANNED)
                     return
                 elif opcode == PacketOpcodes.PLAYER_LOGIN_REQUEST:
                     if state != SessionState.WAITING_FOR_LOGIN:
@@ -78,11 +80,12 @@ class GameServerPacketHandler:
                     if state != SessionState.ACTIVE:
                         return
 
-                # Placeholder for event system (you'd need to implement this)
-                # event = ReceivePacketEvent(session, opcode, payload)
-                # event.call()
-                # if not event.is_canceled():
-                await handler.handle(session, header, payload)
+                # Call the Event
+                event = ReceivePacketEvent(session, opcode, payload)
+                event.call()
+
+                if not event.is_canceled():
+                    await handler.handle(session, header, payload)
 
             except Exception as ex:
                 loguru.logger.exception(f"Error handling packet with opcode {opcode}:")

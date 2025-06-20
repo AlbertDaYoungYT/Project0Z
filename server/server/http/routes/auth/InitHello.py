@@ -7,7 +7,7 @@ from aiohttp import web
 import requests
 from database.Models import *
 from utils.AppServices import AppServices
-from utils.Errors import Codes  # Import the Router instance (see step 3)
+from utils.types.Errors import Codes  # Import the Router instance (see step 3)
 
 async def initial_greeting_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())

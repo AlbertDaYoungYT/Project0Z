@@ -7,12 +7,10 @@ import secrets
 from datetime import date, datetime, timedelta
 
 from cryptography.hazmat.primitives.asymmetric import rsa
-from permissions.PermissionManager import Permission
 from cryptography.x509 import Certificate
-from utils.Locale import Locale
-from utils.Vectors import Vector2d
+from utils.types.Locale import Locale
+from utils.types.Vectors import Vector2d
 from utils.DatabaseAdapter import Serializable
-
 
 class Modelable:
     
@@ -74,7 +72,6 @@ class AccountModel(Model):
     bank_silver: float
     bank_gold: float
 
-    permissions: list[Permission]
     locale: Locale
     ban_reason: str
     ban_end_time: float

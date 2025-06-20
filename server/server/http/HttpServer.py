@@ -4,7 +4,7 @@ from typing import Awaitable, Callable
 import loguru
 from aiohttp import web
 
-from utils.Errors import Codes
+from utils.types.Errors import Codes
 from utils.AppServices import AppServices
 from .Router import router  # Import Router class and instance
 import server.http.routes

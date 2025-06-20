@@ -10,7 +10,7 @@ from server.packets.net.player.login.PlayerLoginReq import PlayerLoginReq
 from server.packets.send.PacketPlayerLoginRsp import PacketPlayerLoginRsp
 from server.player.Account import Account
 from server.player.Player import Player
-from utils.Errors import Codes
+from utils.types.Errors import Codes
 
 
 @opcodes(value=PacketOpcodes.PLAYER_LOGIN_REQUEST)

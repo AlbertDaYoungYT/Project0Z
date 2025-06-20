@@ -2,6 +2,7 @@ from typing import Dict
 
 import loguru
 from server.GameSession import GameSession
+from utils.types.Reasons import SocketCloseReason
 from utils.AppServices import AppServices
 
 
@@ -39,12 +40,14 @@ class GameSessionManager:
         else:
             loguru.logger.warning(f"Session already exists for {addr}")
 
-    async def handle_receive(self, data: bytes, addr: tuple):
-        session = self.get_session(addr)
-        if session:
-            await session.handle_receive(data)
-        else:
-            loguru.logger.warning(f"Received data for non-existent session at {addr}")
+# Uncommented as its handled by the GameServerPacketHandler.py
+#
+#    async def handle_receive(self, data: bytes, addr: tuple):
+#        session = self.get_session(addr)
+#        if session:
+#            await session.handle_receive(data)
+#        else:
+#            loguru.logger.warning(f"Received data for non-existent session at {addr}")
 
     async def handle_close(self, addr: tuple):
         if addr in self._sessions:
@@ -59,6 +62,10 @@ class GameSessionManager:
             await session.send_data(data)
         else:
             loguru.logger.warning(f"Cannot send to non-existent session at {addr}")
+    
+    async def stop(self):
+        for addr, session in self._sessions.items():
+            await session.close(reason=SocketCloseReason.SERVER_STOPPING)
 
 
 class KcpTunnel:

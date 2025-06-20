@@ -2,7 +2,7 @@ import json, loguru
 from aiohttp import web
 from server.player.Account import Account
 from utils.AppServices import AppServices
-from utils.Errors import Codes  # Import the Router instance (see step 3)
+from utils.types.Errors import Codes  # Import the Router instance (see step 3)
 
 async def login_handler(request: web.Request, services: AppServices):
     _json: dict = json.loads(request.content.read_nowait())
